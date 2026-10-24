@@ -49,8 +49,8 @@ Khách (Guest), Độc giả (Reader), Thủ thư (Librarian), Quản trị viê
   + docs:	Tài liệu, README	
   + chore:	Cấu hình, thư viện, dọn dẹp
 - Ví dụ:
-  feat: add borrow request API
-  fix: lock account after 5 failed logins
-  refactor: extract fine calculation to service
-  docs: update README with module structure
-  chore: add spring-boot-starter-mail
+  + feat: add borrow request API
+  + fix: lock account after 5 failed logins
+  + refactor: extract fine calculation to service
+  + docs: update README with module structure
+  + chore: add spring-boot-starter-mail
