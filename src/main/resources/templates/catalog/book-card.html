@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- Thẻ một cuốn sách, dùng ở trang chủ và trang danh sách -->
+<div th:fragment="card(b)" class="card h-100 book-card">
+    <img th:if="${b.coverUrl != null}" class="book-cover card-img-top" th:src="@{${b.coverUrl}}" alt="Ảnh bìa">
+    <div th:if="${b.coverUrl == null}" class="book-cover book-cover-empty card-img-top">Chưa có ảnh bìa</div>
+    <div class="card-body">
+        <h6 class="card-title">
+            <a class="text-decoration-none" th:href="@{/books/{id}(id=${b.id})}" th:text="${b.title}">Tên sách</a>
+        </h6>
+        <div class="small text-muted" th:text="${b.authorNames}">Tác giả</div>
+        <div class="small">
+            <span class="badge bg-secondary" th:if="${b.categoryName != null}" th:text="${b.categoryName}">Thể loại</span>
+        </div>
+        <div class="small text-muted mt-1">ISBN: <span th:text="${b.isbn}"></span></div>
+    </div>
+</div>
+
+</body>
+</html>

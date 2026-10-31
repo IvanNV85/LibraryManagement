@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Ảnh bìa sách')}"></head>
+<body>
+<div th:replace="~{fragments/layout :: navbar}"></div>
+
+<div class="container my-4" style="max-width: 720px;">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="mb-1">Ảnh bìa sách</h4>
+            <p class="text-muted" th:text="${book.title} + ' (ISBN: ' + ${book.isbn} + ')'">Tên sách</p>
+
+            <div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
+            <div class="alert alert-success" th:if="${message}" th:text="${message}"></div>
+
+            <div class="mb-3" style="max-width: 200px;">
+                <img th:if="${book.coverUrl != null}" class="book-cover" th:src="@{${book.coverUrl}}" alt="Ảnh bìa hiện tại">
+                <div th:if="${book.coverUrl == null}" class="book-cover book-cover-empty">Chưa có ảnh bìa</div>
+            </div>
+
+            <!-- enctype multipart/form-data là bắt buộc khi upload file -->
+            <form th:action="@{/librarian/books/{id}/cover(id=${book.id})}" method="post" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <label class="form-label" for="cover">Chọn ảnh mới (JPG hoặc PNG, tối đa 2MB)</label>
+                    <input class="form-control" type="file" id="cover" name="cover"
+                           accept="image/jpeg,image/png" required>
+                </div>
+                <button class="btn btn-primary" type="submit">Lưu ảnh bìa</button>
+                <a class="btn btn-outline-secondary ms-2" th:href="@{/books}">Quay lại danh mục</a>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

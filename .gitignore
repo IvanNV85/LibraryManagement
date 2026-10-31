@@ -33,3 +33,6 @@ build/
 .vscode/
 
 .gitattributes
+
+### Ảnh upload khi chạy local ###
+uploads/
