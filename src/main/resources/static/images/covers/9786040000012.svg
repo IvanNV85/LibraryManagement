@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 400" width="300" height="400">
-  <rect width="300" height="400" fill="#b23a48"/>
-  <rect x="14" y="14" width="272" height="372" fill="none" stroke="#ffffff" stroke-opacity="0.55" stroke-width="2"/>
-  <rect x="0" y="0" width="22" height="400" fill="#000000" fill-opacity="0.18"/>
-  <text text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="34" font-weight="bold" fill="#ffffff"><tspan x="150" y="200">Số đỏ</tspan></text>
-  <line x1="70" y1="318" x2="230" y2="318" stroke="#ffffff" stroke-opacity="0.6"/>
-  <text x="150" y="346" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="15" fill="#ffffff" fill-opacity="0.9">Văn học Việt Nam</text>
-</svg>
