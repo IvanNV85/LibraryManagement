@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Đăng ký thành công')}"></head>
+<body>
+<div th:replace="~{fragments/layout :: navbar}"></div>
+
+<div class="container">
+    <div class="card auth-card">
+        <div class="card-body">
+            <h4 class="mb-3">Đăng ký thành công</h4>
+            <p>Chúng tôi đã gửi email xác thực. Vui lòng bấm vào liên kết trong email để kích hoạt tài khoản.</p>
+            <p>Sau khi xác thực, thẻ thư viện của bạn sẽ được thủ thư duyệt trước khi bạn có thể mượn sách.</p>
+            <a class="btn btn-primary" th:href="@{/login}">Đến trang đăng nhập</a>
+        </div>
+    </div>
+</div>
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>
