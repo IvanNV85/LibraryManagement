@@ -13,15 +13,16 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-/* UC1 UC2*/
+/** UC1 Đăng ký, UC2 Đăng nhập / Đăng xuất. */
 @Controller
 @RequiredArgsConstructor
 public class AuthController {
 
     private final AuthService authService;
 
-    // ---------- Log In/Log Out ----------
+    // ---------- Đăng nhập / Đăng xuất ----------
 
     @GetMapping("/login")
     public String loginPage(HttpServletRequest request) {
@@ -56,7 +57,7 @@ public class AuthController {
         return "redirect:/login";
     }
 
-    // ---------- Register ----------
+    // ---------- Đăng ký ----------
 
     @GetMapping("/register")
     public String registerPage(Model model) {
@@ -65,38 +66,16 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public String register(@ModelAttribute("form") RegisterForm form, Model model) {
+    public String register(@ModelAttribute("form") RegisterForm form, Model model,
+                           RedirectAttributes redirectAttributes) {
         try {
             authService.register(form);
-            return "redirect:/register/success"; // redirect để F5 không gửi lại form
+            redirectAttributes.addFlashAttribute("message",
+                    "Đăng ký thành công. Thẻ thư viện của bạn đang chờ thủ thư duyệt, bạn có thể đăng nhập ngay.");
+            return "redirect:/login"; // redirect để F5 không gửi lại form
         } catch (BusinessException e) {
             model.addAttribute("error", e.getMessage());
             return "auth/register";
         }
-    }
-
-    @GetMapping("/register/success")
-    public String registerSuccess() {
-        return "auth/register-success";
-    }
-
-    // ---------- Email Verify ----------
-
-    @GetMapping("/verify-email")
-    public String verifyEmail(@RequestParam String token, Model model) {
-        model.addAttribute("success", authService.verifyEmail(token));
-        return "auth/verify-email";
-    }
-
-    @GetMapping("/resend-verification")
-    public String resendPage() {
-        return "auth/resend-verification";
-    }
-
-    @PostMapping("/resend-verification")
-    public String resend(@RequestParam String email, Model model) {
-        authService.resendVerification(email);
-        model.addAttribute("message", "Nếu email tồn tại và chưa được xác thực, chúng tôi đã gửi lại liên kết xác thực.");
-        return "auth/resend-verification";
     }
 }

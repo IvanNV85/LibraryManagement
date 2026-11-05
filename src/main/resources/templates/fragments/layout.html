@@ -31,11 +31,10 @@
                     <option value="ALL" th:selected="${field == 'ALL'}">Tất cả</option>
                     <option value="TITLE" th:selected="${field == 'TITLE'}">Tên sách</option>
                     <option value="AUTHOR" th:selected="${field == 'AUTHOR'}">Tác giả</option>
-                    <option value="CATEGORY" th:selected="${field == 'CATEGORY'}">Thể loại</option>
                     <option value="ISBN" th:selected="${field == 'ISBN'}">ISBN</option>
                 </select>
                 <input class="form-control" type="text" id="keyword" name="keyword" th:value="${keyword}"
-                       maxlength="100" placeholder="Tìm tên sách, tác giả, thể loại, ISBN..."
+                       maxlength="100" placeholder="Tìm tên sách, tác giả, ISBN..."
                        list="suggestions" autocomplete="off" th:data-suggest-url="@{/books/suggest}">
                 <datalist id="suggestions"></datalist>
                 <button class="btn btn-primary" type="submit" aria-label="Tìm kiếm"><i class="bi bi-search"></i></button>
@@ -66,14 +65,23 @@
                     </div>
 
                     <!--
-                      Thêm chức năng mới vào menu: copy một thẻ <a class="account-item"> bên dưới.
-                      Chức năng của độc giả (lịch sử mượn, yêu thích, thông báo...) thêm với th:unless="${currentUser.staff}",
-                      chức năng của thủ thư/admin thêm với th:if="${currentUser.staff}".
-                      Icon chọn tại https://icons.getbootstrap.com
+                      Menu chức năng theo vai trò. Mỗi vai trò có một file riêng, người làm use case chỉ cần
+                      thêm một thẻ <a class="account-item"> vào file đó (xem hướng dẫn trong từng file),
+                      KHÔNG cần sửa file layout này:
+                        độc giả            : fragments/menu-reader.html
+                        thủ thư (và admin) : fragments/menu-librarian.html
+                        admin              : fragments/menu-admin.html
                     -->
-                    <a class="account-item" th:unless="${currentUser.staff}" th:href="@{/reader/profile}">
-                        <span class="icon-circle"><i class="bi bi-person-gear"></i></span>Hồ sơ cá nhân
-                    </a>
+                    <th:block th:if="${currentUser.reader}">
+                        <th:block th:replace="~{fragments/menu-reader :: items}"></th:block>
+                    </th:block>
+                    <th:block th:if="${currentUser.staff}">
+                        <th:block th:replace="~{fragments/menu-librarian :: items}"></th:block>
+                    </th:block>
+                    <th:block th:if="${currentUser.admin}">
+                        <th:block th:replace="~{fragments/menu-admin :: items}"></th:block>
+                    </th:block>
+
                     <a class="account-item" th:href="@{/account/change-password}">
                         <span class="icon-circle"><i class="bi bi-key"></i></span>Đổi mật khẩu
                     </a>
@@ -88,11 +96,39 @@
     </div>
 </header>
 
-<!-- Ảnh đại diện tròn; chưa có ảnh thì hiện chữ cái đầu của tên. cls: avatar-sm hoặc avatar-md -->
-<span th:fragment="avatar(user, cls)" th:class="'avatar-wrap ' + ${cls}">
-    <img th:if="${user.avatarUrl != null}" th:src="@{${user.avatarUrl}}" alt="">
-    <span th:if="${user.avatarUrl == null}" th:text="${user.fullName.substring(0, 1).toUpperCase()}">A</span>
-</span>
+<!-- Hình tròn hiện chữ cái đầu của tên. cls: avatar-sm hoặc avatar-md -->
+<span th:fragment="avatar(user, cls)" th:class="'avatar-wrap ' + ${cls}"
+      th:text="${user.fullName.substring(0, 1).toUpperCase()}">A</span>
+
+<!--
+  Thông báo kết quả: hiện ${error} (đỏ) và ${message} (xanh) nếu có.
+  Dùng: <div th:replace="~{fragments/layout :: alerts}"></div>
+  Sau redirect, controller dùng redirectAttributes.addFlashAttribute("message", "...") là hiện được.
+-->
+<div th:fragment="alerts">
+    <div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
+    <div class="alert alert-success" th:if="${message}" th:text="${message}"></div>
+</div>
+
+<!--
+  Phân trang cho kết quả kiểu Spring Page.
+  Dùng: <nav th:replace="~{fragments/layout :: pagination(${result}, @{/books(keyword=${keyword})})}"></nav>
+  Tham số thứ hai là đường dẫn kèm các bộ lọc hiện tại (không kèm page), fragment tự thêm page=N.
+-->
+<nav th:fragment="pagination(page, url)" th:if="${page.totalPages > 1}" class="mt-4"
+     th:with="sep=${#strings.contains(url, '?') ? '&' : '?'}">
+    <ul class="pagination justify-content-center mb-0">
+        <li class="page-item" th:classappend="${page.first} ? 'disabled'">
+            <a class="page-link" th:href="${url + sep + 'page=' + (page.number - 1)}">Trước</a>
+        </li>
+        <li class="page-item disabled">
+            <span class="page-link">Trang <span th:text="${page.number + 1}">1</span> / <span th:text="${page.totalPages}">1</span></span>
+        </li>
+        <li class="page-item" th:classappend="${page.last} ? 'disabled'">
+            <a class="page-link" th:href="${url + sep + 'page=' + (page.number + 1)}">Sau</a>
+        </li>
+    </ul>
+</nav>
 
 <footer th:fragment="footer" class="site-footer">
     <div class="container">
@@ -113,11 +149,9 @@
                 <ul th:if="${currentUser == null}">
                     <li><a th:href="@{/login}">Đăng nhập</a></li>
                     <li><a th:href="@{/register}">Đăng ký</a></li>
-                    <li><a th:href="@{/forgot-password}">Quên mật khẩu</a></li>
-                    <li><a th:href="@{/resend-verification}">Gửi lại email xác thực</a></li>
                 </ul>
                 <ul th:if="${currentUser != null}">
-                    <li th:unless="${currentUser.staff}"><a th:href="@{/reader/profile}">Hồ sơ cá nhân</a></li>
+                    <li th:if="${currentUser.reader}"><a th:href="@{/reader/profile}">Hồ sơ cá nhân</a></li>
                     <li><a th:href="@{/account/change-password}">Đổi mật khẩu</a></li>
                 </ul>
             </div>
