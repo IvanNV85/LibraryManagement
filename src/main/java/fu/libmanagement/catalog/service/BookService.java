@@ -1,7 +1,6 @@
 package fu.libmanagement.catalog.service;
 
 import fu.libmanagement.catalog.dto.BookSummary;
-import fu.libmanagement.catalog.dto.CategoryCount;
 import fu.libmanagement.catalog.dto.SearchField;
 import fu.libmanagement.catalog.entity.Author;
 import fu.libmanagement.catalog.entity.Book;
@@ -18,7 +17,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
-/** UC5 Tìm kiếm sách (theo tên, tác giả, thể loại, ISBN), gợi ý từ khóa, phân trang. */
+/** UC5 Tìm kiếm sách (theo tên, tác giả, ISBN), gợi ý từ khóa, phân trang. */
 @Service
 @RequiredArgsConstructor
 public class BookService {
@@ -58,12 +57,6 @@ public class BookService {
         return bookRepository.findTop5ByVisibleTrueOrderByCreatedAtDescIdDesc().stream()
                 .map(this::toSummary)
                 .toList();
-    }
-
-    /** Danh sách thể loại kèm số đầu sách cho trang chủ. */
-    @Transactional(readOnly = true)
-    public List<CategoryCount> getCategoryCounts() {
-        return bookRepository.countBooksByCategory();
     }
 
     private String normalize(String keyword) {

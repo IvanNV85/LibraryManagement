@@ -32,12 +32,16 @@ public final class ValidationUtil {
         return trim(email).toLowerCase();
     }
 
-    /** Kiểm tra họ tên và SĐT (đã trim) dùng chung cho đăng ký và cập nhật hồ sơ. Sai thì ném BusinessException. */
-    public static void checkNameAndPhone(String fullName, String phone) {
+    /** Họ tên (đã trim) phải từ 2 đến 100 ký tự. Sai thì ném BusinessException. */
+    public static void checkFullName(String fullName) {
         if (fullName.length() < 2 || fullName.length() > 100) {
             throw new BusinessException("Họ tên phải từ 2 đến 100 ký tự");
         }
-        if (!isValidPhone(phone)) {
+    }
+
+    /** SĐT (đã trim) có thể để trống; nếu nhập thì phải đúng định dạng. Sai thì ném BusinessException. */
+    public static void checkPhoneIfPresent(String phone) {
+        if (!phone.isEmpty() && !isValidPhone(phone)) {
             throw new BusinessException("Số điện thoại phải gồm 10 chữ số, bắt đầu bằng 0");
         }
     }

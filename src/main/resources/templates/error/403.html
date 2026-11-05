@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Không có quyền truy cập')}"></head>
+<body>
+<div th:replace="~{fragments/layout :: navbar}"></div>
+
+<div class="container">
+    <div class="card auth-card text-center">
+        <div class="card-body">
+            <h4 class="mb-3">Không có quyền truy cập</h4>
+            <p>Tài khoản của bạn không có quyền vào trang này.</p>
+            <a class="btn btn-primary" th:href="@{/}">Về trang chủ</a>
+        </div>
+    </div>
+</div>
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

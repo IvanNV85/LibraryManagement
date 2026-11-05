@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<!--
+  MENU CỦA ĐỘC GIẢ (hiện trong menu tài khoản khi đăng nhập bằng role READER).
+  Thêm chức năng mới: copy một thẻ <a class="account-item"> bên dưới, đổi đường dẫn, tên và icon
+  (chọn icon tại https://icons.getbootstrap.com). Đường dẫn của độc giả bắt đầu bằng /reader/.
+  Gợi ý: UC9 yêu thích, UC11 yêu cầu mượn, UC12 lịch sử mượn trả, UC15 thông báo.
+-->
+<th:block th:fragment="items">
+    <a class="account-item" th:href="@{/reader/profile}">
+        <span class="icon-circle"><i class="bi bi-person-gear"></i></span>Hồ sơ cá nhân
+    </a>
+    <!-- Thêm các mục của độc giả bên dưới dòng này -->
+</th:block>
+</body>
+</html>

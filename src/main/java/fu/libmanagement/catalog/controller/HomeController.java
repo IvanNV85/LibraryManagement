@@ -6,7 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
-/** Trang chủ: giới thiệu, duyệt theo thể loại và sách mới. Công khai, ai cũng xem được. */
+/** Trang chủ: giới thiệu và sách mới. Công khai, ai cũng xem được; đăng nhập xong mọi vai trò về đây. */
 @Controller
 @RequiredArgsConstructor
 public class HomeController {
@@ -15,7 +15,6 @@ public class HomeController {
 
     @GetMapping("/")
     public String home(Model model) {
-        model.addAttribute("categories", bookService.getCategoryCounts());
         model.addAttribute("newBooks", bookService.getNewestBooks());
         return "catalog/home";
     }

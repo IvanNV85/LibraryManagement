@@ -3,14 +3,13 @@ package fu.libmanagement.catalog.dto;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-/** Tiêu chí tìm kiếm sách: tìm theo tên, tác giả, thể loại, ISBN hoặc tất cả. */
+/** Tiêu chí tìm kiếm sách (UC5): tên sách, tác giả, ISBN hoặc tất cả. */
 @Getter
 @RequiredArgsConstructor
 public enum SearchField {
     ALL("Tất cả"),
     TITLE("Tên sách"),
     AUTHOR("Tác giả"),
-    CATEGORY("Thể loại"),
     ISBN("ISBN");
 
     private final String label;
