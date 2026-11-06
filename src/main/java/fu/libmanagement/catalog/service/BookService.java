@@ -4,7 +4,9 @@ import fu.libmanagement.catalog.dto.BookSummary;
 import fu.libmanagement.catalog.dto.SearchField;
 import fu.libmanagement.catalog.entity.Author;
 import fu.libmanagement.catalog.entity.Book;
+import fu.libmanagement.catalog.entity.BookSort;
 import fu.libmanagement.catalog.repository.BookRepository;
+import fu.libmanagement.common.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -57,6 +59,28 @@ public class BookService {
         return bookRepository.findTop5ByVisibleTrueOrderByCreatedAtDescIdDesc().stream()
                 .map(this::toSummary)
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public Page<BookSummary> searchAndFilter(String keyword, String field, Long categoryId, Integer publishYear, BookSort sortType, int page) {
+        if (sortType == null) {
+            sortType = BookSort.TITLE;
+        }
+
+        Sort sort = switch (sortType) {
+            case NEWEST -> Sort.by(Sort.Direction.DESC, "publishYear", "id");
+            case RATING -> Sort.by(Sort.Direction.DESC, "id");
+            case TITLE -> Sort.by("title");
+        };
+
+        Pageable pageable = PageRequest.of(Math.max(page, 0), PAGE_SIZE, sort);
+        String kw = normalize(keyword);
+        if (field == null || field.isEmpty()) {
+            field = "ALL";
+        }
+
+        Page<Book> books = bookRepository.searchAndFilter(field, "%" + kw + "%", categoryId, publishYear, pageable);
+        return books.map(this::toSummary);
     }
 
     private String normalize(String keyword) {

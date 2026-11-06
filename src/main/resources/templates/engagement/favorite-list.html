@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Sách yêu thích')}"></head>
+<body>
+<div th:replace="~{fragments/layout :: navbar}"></div>
+
+<div class="container my-4">
+  <div class="panel page-spacer">
+    <h3>SÁCH YÊU THÍCH</h3>
+    <hr>
+
+    <!-- Thông báo thành công / lỗi -->
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <h4 class="mt-3">Danh sách sách (<span th:text="${result.totalElements}">0</span>)</h4>
+
+    <!-- Chưa có sách nào -->
+    <div class="alert alert-info" th:if="${books.isEmpty()}">
+      Chưa có sách yêu thích. <a th:href="@{/books}">Xem danh mục sách</a>
+    </div>
+
+    <table class="table table-bordered align-middle" th:if="${!books.isEmpty()}">
+      <thead>
+      <tr>
+        <th>Ảnh bìa</th>
+        <th>Tên sách</th>
+        <th>Tác giả</th>
+        <th>Thể loại</th>
+        <th>ISBN</th>
+        <th>Thao tác</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="b : ${books}">
+        <td>
+          <img th:if="${b.coverUrl != null}" th:src="@{${b.coverUrl}}" alt="Ảnh bìa" style="width: 70px;">
+          <span th:if="${b.coverUrl == null}" class="small text-muted">Chưa có ảnh</span>
+        </td>
+        <td>
+          <a th:href="@{/books/{id}(id=${b.id})}" th:text="${b.title}">Tên sách</a>
+        </td>
+        <td th:text="${b.authorNames}">Tác giả</td>
+        <td th:text="${b.categoryName}">Thể loại</td>
+        <td th:text="${b.isbn}">ISBN</td>
+        <td>
+          <form class="d-inline" th:action="@{/reader/favorites/{id}/remove(id=${b.id})}" method="post">
+            <button type="submit" class="btn btn-danger btn-sm">Bỏ yêu thích</button>
+          </form>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+
+    <!-- Phân trang -->
+    <nav th:replace="~{fragments/layout :: pagination(${result}, @{/reader/favorites})}"></nav>
+  </div>
+</div>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>
