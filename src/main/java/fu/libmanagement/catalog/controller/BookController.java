@@ -36,7 +36,9 @@ public class BookController {
         return "catalog/book-list";
     }
 
-    /** Gợi ý từ khóa khi gõ. Trả về văn bản thuần, mỗi dòng một gợi ý (đơn giản hơn JSON). */
+    /**
+     * Gợi ý từ khóa khi gõ. Trả về văn bản thuần, mỗi dòng một gợi ý (đơn giản hơn JSON).
+     */
     @GetMapping(value = "/books/suggest", produces = "text/plain;charset=UTF-8")
     @ResponseBody
     public String suggest(@RequestParam(defaultValue = "") String q) {
