@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.util.Set;
 
 /**
- * Chặn truy cập nếu chưa đăng nhập hoặc sai vai trò (UC2 ).
+ * Chặn truy cập nếu chưa đăng nhập hoặc sai vai trò (UC2 - phân quyền).
  * Danh sách vai trò rỗng nghĩa là chỉ cần đã đăng nhập.
  * Đường dẫn nào dùng interceptor nào được khai báo trong WebConfig.
  */

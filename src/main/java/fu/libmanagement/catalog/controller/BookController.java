@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
 
-/** UC5 Tìm kiếm sách. Khách và độc giả đều dùng được (URL công khai). */
+/** UC5 Tìm kiếm sách theo tên, tác giả, ISBN, có phân trang. Khách và độc giả đều dùng được (URL công khai). */
 @Controller
 @RequiredArgsConstructor
 public class BookController {

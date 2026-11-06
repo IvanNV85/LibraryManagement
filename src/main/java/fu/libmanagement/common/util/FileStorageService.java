@@ -13,7 +13,7 @@ import java.nio.file.Path;
 import java.util.UUID;
 
 /**
- * Lưu ảnh upload (ảnh đại diện, ảnh bìa sách) vào thư mục trên ổ đĩa.
+ * Lưu ảnh upload (ảnh bìa sách ở UC20) vào thư mục trên ổ đĩa.
  * File được phục vụ lại qua đường dẫn /uploads/** (xem WebConfig).
  */
 @Slf4j
@@ -32,7 +32,7 @@ public class FileStorageService {
     }
 
     /**
-     * Lưu ảnh JPG/PNG vào thư mục con {@code folder}, trả về URL để lưu vào DB (vd /uploads/avatars/abc.png).
+     * Lưu ảnh JPG/PNG vào thư mục con {@code folder}, trả về URL để lưu vào DB (vd /uploads/covers/abc.png).
      * Tên file do server tự sinh, không dùng tên file người dùng gửi lên.
      */
     public String saveImage(MultipartFile file, String folder) {

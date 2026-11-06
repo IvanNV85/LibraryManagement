@@ -31,7 +31,7 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addInterceptor(new RoleInterceptor(Role.ADMIN)).addPathPatterns("/admin/**");
     }
 
-    /** Cho phép xem ảnh đã upload (ảnh đại diện, ảnh bìa) qua /uploads/**. */
+    /** Cho phép xem ảnh đã upload (ảnh bìa sách) qua /uploads/**. */
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/uploads/**")

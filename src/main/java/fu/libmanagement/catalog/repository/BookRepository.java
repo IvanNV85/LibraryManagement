@@ -1,6 +1,5 @@
 package fu.libmanagement.catalog.repository;
 
-import fu.libmanagement.catalog.dto.CategoryCount;
 import fu.libmanagement.catalog.entity.Book;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,16 +15,15 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     Page<Book> findByVisibleTrue(Pageable pageable);
 
     /**
-     * Tìm sách đang hiển thị theo từ khóa. {@code field} là một trong ALL, TITLE, AUTHOR, CATEGORY, ISBN;
+     * Tìm sách đang hiển thị theo từ khóa. {@code field} là một trong ALL, TITLE, AUTHOR, ISBN;
      * {@code kw} đã ở dạng chữ thường và có dấu % hai đầu. Phân trang ngay trong DB.
+     * (Database dùng collation Vietnamese_CI_AI nên tìm không phân biệt hoa thường và dấu.)
      */
     @Query("""
             select b from Book b
-            left join b.category c
             where b.visible = true
               and (   ((:field = 'ALL' or :field = 'TITLE') and lower(b.title) like :kw)
                    or ((:field = 'ALL' or :field = 'ISBN') and lower(b.isbn) like :kw)
-                   or ((:field = 'ALL' or :field = 'CATEGORY') and lower(c.name) like :kw)
                    or ((:field = 'ALL' or :field = 'AUTHOR') and exists (
                            select 1 from b.authors a where lower(a.name) like :kw)))
             """)
@@ -37,14 +35,4 @@ public interface BookRepository extends JpaRepository<Book, Long> {
 
     /** 5 sách mới nhất đang hiển thị (cùng giờ thêm thì lấy cuốn có id lớn hơn). */
     List<Book> findTop5ByVisibleTrueOrderByCreatedAtDescIdDesc();
-
-    /** Số đầu sách của từng thể loại (chỉ thể loại đang có sách), tính bằng 1 câu query. */
-    @Query("""
-            select new fu.libmanagement.catalog.dto.CategoryCount(c.name, count(b))
-            from Book b join b.category c
-            where b.visible = true
-            group by c.id, c.name
-            order by c.name
-            """)
-    List<CategoryCount> countBooksByCategory();
 }

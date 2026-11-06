@@ -16,7 +16,11 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-/** Tài khoản đăng nhập, dùng chung cho độc giả, thủ thư và admin (phân biệt bằng role). */
+/**
+ * Tài khoản đăng nhập, dùng chung cho độc giả, thủ thư và admin (phân biệt bằng role).
+ * Các cột avatar_url, email_verified, failed_login_count, locked_until có trong DB khung
+ * nhưng bản đơn giản hóa không dùng nên không map.
+ */
 @Entity
 @Table(name = "users")
 @Getter
@@ -40,9 +44,6 @@ public class User {
     @Column(name = "address", length = 255)
     private String address;
 
-    @Column(name = "avatar_url", length = 255)
-    private String avatarUrl;
-
     @Column(name = "password_hash", nullable = false, length = 100)
     private String passwordHash;
 
@@ -53,17 +54,6 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 20)
     private AccountStatus status;
-
-    @Column(name = "email_verified", nullable = false)
-    private boolean emailVerified;
-
-    /** Số lần đăng nhập sai liên tiếp. */
-    @Column(name = "failed_login_count", nullable = false)
-    private int failedLoginCount;
-
-    /** Bị khóa tạm đến thời điểm này (do đăng nhập sai nhiều lần). */
-    @Column(name = "locked_until")
-    private LocalDateTime lockedUntil;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();

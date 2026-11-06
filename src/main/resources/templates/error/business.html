@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Thông báo')}"></head>
+<body>
+<div th:replace="~{fragments/layout :: navbar}"></div>
+
+<div class="container">
+    <div class="card auth-card text-center">
+        <div class="card-body">
+            <h4 class="mb-3">Không thực hiện được</h4>
+            <p th:text="${message}">Thông báo lỗi</p>
+            <a class="btn btn-primary" href="javascript:history.back()">Quay lại</a>
+            <a class="btn btn-outline-secondary ms-2" th:href="@{/}">Về trang chủ</a>
+        </div>
+    </div>
+</div>
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>
