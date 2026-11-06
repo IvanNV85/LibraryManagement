@@ -61,28 +61,6 @@ public class BookService {
                 .toList();
     }
 
-    @Transactional(readOnly = true)
-    public Page<BookSummary> searchAndFilter(String keyword, String field, Long categoryId, Integer publishYear, BookSort sortType, int page) {
-        if (sortType == null) {
-            sortType = BookSort.TITLE;
-        }
-
-        Sort sort = switch (sortType) {
-            case NEWEST -> Sort.by(Sort.Direction.DESC, "publishYear", "id");
-            case RATING -> Sort.by(Sort.Direction.DESC, "id");
-            case TITLE -> Sort.by("title");
-        };
-
-        Pageable pageable = PageRequest.of(Math.max(page, 0), PAGE_SIZE, sort);
-        String kw = normalize(keyword);
-        if (field == null || field.isEmpty()) {
-            field = "ALL";
-        }
-
-        Page<Book> books = bookRepository.searchAndFilter(field, "%" + kw + "%", categoryId, publishYear, pageable);
-        return books.map(this::toSummary);
-    }
-
     private String normalize(String keyword) {
         return keyword == null ? "" : keyword.trim().toLowerCase(Locale.ROOT);
     }
