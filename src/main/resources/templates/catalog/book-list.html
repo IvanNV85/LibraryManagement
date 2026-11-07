@@ -9,8 +9,8 @@
 
         <h1 class="h4 mb-1" th:text="${keyword.isEmpty()} ? 'Danh mục sách' : 'Kết quả tìm kiếm'">Danh mục sách</h1>
 
-        <!--UC7:Lọc và sắp xếp sách -->
-        <form class="row g-2 my-2" th:action="@{/books/filter}" method="get">
+        <!--UC7:lọc và sắp xếp sách-->
+        <form class="row g-2 my-2" th:action="@{/books}" method="get">
             <input type="hidden" name="keyword" th:value="${keyword}">
             <input type="hidden" name="field" th:value="${field}">
 
@@ -32,7 +32,7 @@
                 <select class="form-select" name="sort">
                     <option value="TITLE" th:selected="${sort == 'TITLE'}">Tên sách A-Z</option>
                     <option value="NEWEST" th:selected="${sort == 'NEWEST'}">Mới nhất</option>
-                    <option value="RATING" th:selected="${sort == 'RATING'}">Đánh giá cao</option>
+                    <option value="RATING" th:selected="${sort == 'RATING'}">Đánh giá</option>
                 </select>
             </div>
             <div class="col-6 col-md-4">

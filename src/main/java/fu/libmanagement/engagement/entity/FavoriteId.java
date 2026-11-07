@@ -5,7 +5,6 @@ import lombok.*;
 
 import java.io.Serializable;
 
-/** Khóa chính ghép của bảng favorites. */
 @Embeddable
 @Getter
 @Setter

@@ -101,14 +101,13 @@
         <h4 class="mt-4">Mô tả</h4>
         <p th:text="${book.description != null} ? ${book.description} : 'Chưa có mô tả.'">Mô tả</p>
 
-        <!-- Đánh giá của độc giả -->
         <h4 class="mt-4">Đánh giá của độc giả</h4>
 
         <div th:if="${currentUser != null and currentUser.reader}" class="mb-3">
 
-            <!-- Đã mượn: được đánh giá -->
+            <!--Được đánh giá-->
             <form th:if="${canReview}" th:action="@{/reader/books/{id}/review(id=${book.id})}" method="post">
-                <h6 th:text="${reviewForm.rating == null} ? 'Viết đánh giá của bạn' : 'Đánh giá của bạn (gửi lại để cập nhật)'">Viết đánh giá</h6>
+                <h6 th:text="${reviewForm.rating == null} ? 'Viết đánh giá của bạn' : 'Đánh giá của bạn (cập nhật)'">Viết đánh giá</h6>
 
                 <div class="mb-2">
                     <select class="form-select" name="rating" required style="max-width: 200px;">
@@ -120,7 +119,7 @@
 
                 <div class="mb-2">
             <textarea class="form-control" name="comment" rows="3" maxlength="1000"
-                      placeholder="Nhận xét của bạn về cuốn sách (không bắt buộc)"
+                      placeholder="Nhận xét của bạn về cuốn sách "
                       th:text="${reviewForm.comment}"></textarea>
                 </div>
 
@@ -128,7 +127,7 @@
                         th:text="${reviewForm.rating == null} ? 'Gửi đánh giá' : 'Cập nhật đánh giá'">Gửi đánh giá</button>
             </form>
 
-            <!-- Chưa mượn: không được đánh giá -->
+            <!--Chưa mượn, không đánh giá đc-->
             <p th:if="${!canReview}" class="text-muted">
                 Chỉ độc giả đã mượn cuốn sách này mới được đánh giá.
             </p>

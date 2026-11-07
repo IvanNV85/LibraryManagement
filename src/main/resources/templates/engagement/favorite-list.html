@@ -9,12 +9,12 @@
     <h3>SÁCH YÊU THÍCH</h3>
     <hr>
 
-    <!-- Thông báo thành công / lỗi -->
+    <!--Thông báo thành công/lỗi -->
     <div th:replace="~{fragments/layout :: alerts}"></div>
 
     <h4 class="mt-3">Danh sách sách (<span th:text="${result.totalElements}">0</span>)</h4>
 
-    <!-- Chưa có sách nào -->
+    <!--Chưa có danh sách yêu thích-->
     <div class="alert alert-info" th:if="${books.isEmpty()}">
       Chưa có sách yêu thích. <a th:href="@{/books}">Xem danh mục sách</a>
     </div>

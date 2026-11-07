@@ -12,7 +12,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-/** UC9 Danh sách yêu thích. URL dưới /reader nên chỉ độc giả vào được. */
+//UC9: Danh sách yêu thích
 @Controller
 @RequestMapping("/reader/favorites")
 @RequiredArgsConstructor
@@ -23,12 +23,12 @@ public class FavoriteController {
     @GetMapping
     public String list(@RequestParam(defaultValue = "0") int page,
                        HttpServletRequest request, Model model) {
-        SessionUser user = SessionUser.get(request);          // người đang đăng nhập
+        SessionUser user = SessionUser.get(request);
         Page<BookSummary> result = favoriteService.list(user.getId(), page);
 
         model.addAttribute("result", result);
         model.addAttribute("books", result.getContent());
-        return "engagement/favorite-list";                    // templates/engagement/favorite-list.html
+        return "engagement/favorite-list";
     }
 
     @PostMapping("/{bookId}/add")
@@ -41,7 +41,7 @@ public class FavoriteController {
         } catch (BusinessException e) {
             redirect.addFlashAttribute("error", e.getMessage());
         }
-        return "redirect:/books/" + bookId;                   // quay lại trang chi tiết (UC8)
+        return "redirect:/books/" + bookId;
     }
 
     @PostMapping("/{bookId}/remove")

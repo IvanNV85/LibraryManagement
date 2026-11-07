@@ -1,17 +1,26 @@
 package fu.libmanagement.engagement.dto;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import fu.libmanagement.engagement.entity.Review;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
-//Đánh giá hiển thị trong chi tiết sách
 @Getter
-@RequiredArgsConstructor
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class ReviewResponse {
 
-    private final String readerName;
-    private final int rating;
-    private final String comment;
-    private final LocalDateTime createdAt;
+    private String readerName;
+    private int rating;
+    private String comment;
+    private LocalDateTime createdAt;
+
+    public static ReviewResponse from(Review review) {
+        return new ReviewResponse(
+                review.getReader().getFullName(),
+                review.getRating(),
+                review.getComment(),
+                review.getCreatedAt());
+    }
 }

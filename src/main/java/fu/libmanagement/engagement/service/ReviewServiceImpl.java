@@ -43,7 +43,6 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     @Transactional
     public void save(Long readerId, Long bookId, ReviewRequest request) {
-        // 1. Kiểm tra dữ liệu gửi lên (không tin form, vì ai cũng có thể tự gửi POST)
         Integer rating = request.getRating();
         if (rating == null || rating < 1 || rating > 5) {
             throw new BusinessException("Số sao phải từ 1 đến 5");
