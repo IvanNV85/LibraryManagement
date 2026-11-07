@@ -33,51 +33,60 @@ Hệ thống sử dụng **Bootstrap 5.3.3**, **Bootstrap Icons 1.11.3** và t�
 
 ---
 
-## 2. Khung Bố cục Chuẩn một Trang Thymeleaf
+## 2. Khung Bố cục Chuẩn Thymeleaf
 
-Mọi trang HTML trong `src/main/resources/templates/` (ngoại trừ các fragment) đều phải tuân theo cấu trúc khung sau:
+Hệ thống phân tách thành 2 loại giao diện theo vai trò người dùng:
+
+### 2.1. Khung Giao diện Độc giả & Công khai (Storefront Layout)
+Dùng cho Khách và Độc giả (`/`, `/books/**`, `/reader/**`, `/account/**`):
 
 ```html
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<!-- 1. Tiêu đề trang được nhúng vào layout :: head -->
 <head th:replace="~{fragments/layout :: head('Tiêu đề màn hình')}"></head>
 <body>
-<!-- 2. Navbar dùng chung -->
 <div th:replace="~{fragments/layout :: navbar}"></div>
 
-<!-- 3. Khu vực nội dung chính -->
 <main class="container my-4">
-    <!-- Khung panel nền trắng bo góc đồng bộ của hệ thống -->
     <div class="panel page-spacer">
-        
-        <!-- Header của trang -->
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <div>
-                <h1 class="h4 mb-1">Tiêu đề màn hình</h1>
-                <p class="text-muted small mb-0">Mô tả ngắn gọn chức năng của màn hình này.</p>
-            </div>
-            <!-- Nút hành động chính (nếu có) -->
-            <div>
-                <a class="btn btn-primary" th:href="@{/duong-dan/them-moi}">
-                    <i class="bi bi-plus-lg me-1"></i> Thêm mới
-                </a>
-            </div>
-        </div>
-
-        <!-- 4. Thông báo kết quả (Alert message/error) -->
         <div th:replace="~{fragments/layout :: alerts}"></div>
-
-        <!-- 5. Nội dung chính: Bảng, Form hoặc Card Grid -->
-        <!-- ... -->
-
-        <!-- 6. Phân trang nếu là danh sách -->
-        <nav th:replace="~{fragments/layout :: pagination(${result}, @{/duong-dan-hien-tai(keyword=${keyword})})}"></nav>
+        <!-- Nội dung chính -->
+        <nav th:replace="~{fragments/layout :: pagination(${result}, @{...})}"></nav>
     </div>
 </main>
 
-<!-- 7. Footer dùng chung -->
 <div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>
+```
+
+### 2.2. Khung Giao diện Quản trị có Sidebar cho Thủ thư & Admin (Dashboard Layout)
+Dùng cho Thủ thư và Admin (`/librarian/**`, `/admin/**`):
+
+```html
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout-librarian :: head('Tiêu đề màn hình')}"></head>
+<body>
+
+<div class="dashboard-layout">
+    <!-- Sidebar bên trái, truyền activeTab để highlight mục menu -->
+    <aside th:replace="~{fragments/layout-librarian :: sidebar('books')}"></aside>
+
+    <div class="dashboard-main">
+        <!-- Topbar hiển thị tiêu đề và avatar -->
+        <header th:replace="~{fragments/layout-librarian :: topbar('Tiêu đề màn hình')}"></header>
+
+        <main class="dashboard-content">
+            <div class="panel border-0 shadow-sm p-4">
+                <div th:replace="~{fragments/layout :: alerts}"></div>
+                <!-- Nội dung làm việc chính (Bảng dữ liệu / Form) -->
+                <nav th:replace="~{fragments/layout :: pagination(${result}, @{...})}"></nav>
+            </div>
+        </main>
+    </div>
+</div>
+
 </body>
 </html>
 ```

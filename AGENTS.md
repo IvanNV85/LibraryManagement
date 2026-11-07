@@ -70,13 +70,21 @@ fu.libmanagement
 
 ## 4. Quy chuẩn Giao diện & Layout Thymeleaf
 
-1. **Khung mẫu:** Mọi trang giao diện phải sử dụng các fragment từ `fragments/layout`:
+1. **Phân hệ Độc giả & Công khai (Storefront):** Sử dụng các fragment từ `fragments/layout`:
    * `<head th:replace="~{fragments/layout :: head('Tiêu đề')}"></head>`
    * `<div th:replace="~{fragments/layout :: navbar}"></div>`
    * `<div th:replace="~{fragments/layout :: alerts}"></div>`
    * `<nav th:replace="~{fragments/layout :: pagination(${result}, @{...})}"></nav>`
    * `<div th:replace="~{fragments/layout :: footer}"></div>`
-2. **Khung nội dung chính:** Đặt trong `<main class="container my-4"><div class="panel page-spacer">...</div></main>`.
+   * Khung nội dung chính: `<main class="container my-4"><div class="panel page-spacer">...</div></main>`.
+
+2. **Phân hệ Thủ thư & Quản trị viên (Dashboard có Sidebar):** Sử dụng `fragments/layout-librarian`:
+   * Bao bọc toàn trang bằng: `<div class="dashboard-layout"> ... </div>`
+   * Sidebar điều hướng cố định: `<aside th:replace="~{fragments/layout-librarian :: sidebar('activeTabName')}"></aside>`
+   * Header thanh làm việc: `<header th:replace="~{fragments/layout-librarian :: topbar('Tiêu đề màn hình')}"></header>`
+   * Vùng nội dung chính: `<main class="dashboard-content"><div class="panel border-0 shadow-sm p-4">...</div></main>`
+   * Luôn hỗ trợ link nhanh quay lại giao diện độc giả.
+
 3. **Màu sắc & CSS:** Sử dụng CSS variables từ `style.css` (`--lib-primary: #1d6fb8`, `--lib-bg: #f1ede0`, `--lib-border: #ded8c6`). Không hardcode mã màu lạ vào thẻ `style=""`.
 4. **Đăng ký Menu:** Bắt buộc phải thêm đường dẫn chức năng vào đúng file menu:
    * Độc giả: `templates/fragments/menu-reader.html`
