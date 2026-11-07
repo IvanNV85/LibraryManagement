@@ -5,10 +5,14 @@
   MENU CỦA THỦ THƯ (hiện cho cả LIBRARIAN và ADMIN, vì admin cũng được vào /librarian/**).
   Thêm chức năng mới: copy một thẻ <a class="account-item"> bên dưới, đổi đường dẫn, tên và icon.
   Đường dẫn bắt đầu bằng /librarian/.
-  Gợi ý: UC6 quản lý độc giả, UC16 duyệt yêu cầu mượn, UC17 lập phiếu, UC18 trả sách, UC20 đầu sách, UC21 bản sao.
 -->
 <th:block th:fragment="items">
-    <!-- Thêm các mục của thủ thư bên dưới dòng này -->
+    <a class="account-item" th:href="@{/librarian/dashboard}">
+        <span class="icon-circle"><i class="bi bi-speedometer2"></i></span> Trang quản trị (Dashboard)
+    </a>
+    <a class="account-item" th:href="@{/librarian/books}">
+        <span class="icon-circle"><i class="bi bi-journal-bookmark"></i></span> Quản lý đầu sách
+    </a>
 </th:block>
 </body>
 </html>

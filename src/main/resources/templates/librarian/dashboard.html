@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout-librarian :: head('Dashboard')}"></head>
+<body>
+
+<div class="dashboard-layout">
+    <!-- Sidebar bên trái -->
+    <aside th:replace="~{fragments/layout-librarian :: sidebar('dashboard')}"></aside>
+
+    <!-- Khu vực làm việc chính -->
+    <div class="dashboard-main">
+        <header th:replace="~{fragments/layout-librarian :: topbar('Tổng quan Quản trị')}"></header>
+
+        <main class="dashboard-content">
+            <!-- Thông báo flash -->
+            <div th:replace="~{fragments/layout :: alerts}"></div>
+
+            <!-- Banner Chào mừng -->
+            <div class="panel mb-4 p-4 border-0 shadow-sm" style="background: linear-gradient(135deg, #1d6fb8, #144977); color: #fff;">
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+                    <div>
+                        <h1 class="h3 fw-bold mb-1">
+                            Xin chào, <span th:text="${currentUser != null ? currentUser.fullName : 'Thủ thư'}">Thủ thư</span>!
+                        </h1>
+                        <p class="mb-0 text-white-50">Chào mừng bạn đến với bảng điều khiển nghiệp vụ quản trị thư viện.</p>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <a class="btn btn-light fw-semibold text-primary" th:href="@{/librarian/books/new}">
+                            <i class="bi bi-plus-lg me-1"></i> Thêm đầu sách mới
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Thống kê số liệu nhanh -->
+            <div class="row g-3 mb-4">
+                <div class="col-12 col-md-4">
+                    <div class="panel p-3 border-0 shadow-sm h-100">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <div class="text-muted small fw-semibold text-uppercase">Tổng số đầu sách</div>
+                                <h2 class="h2 fw-bold text-primary mb-0 mt-2" th:text="${totalBooks}">12</h2>
+                            </div>
+                            <div class="icon-circle bg-primary bg-opacity-10 text-primary fs-3" style="width: 52px; height: 52px;">
+                                <i class="bi bi-journal-bookmark"></i>
+                            </div>
+                        </div>
+                        <div class="mt-3 pt-2 border-top small text-muted">
+                            <a class="text-decoration-none" th:href="@{/librarian/books}">Xem toàn bộ danh sách &rarr;</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-md-4">
+                    <div class="panel p-3 border-0 shadow-sm h-100">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <div class="text-muted small fw-semibold text-uppercase">Sách đang hiển thị</div>
+                                <h2 class="h2 fw-bold text-success mb-0 mt-2" th:text="${visibleBooks}">12</h2>
+                            </div>
+                            <div class="icon-circle bg-success bg-opacity-10 text-success fs-3" style="width: 52px; height: 52px;">
+                                <i class="bi bi-eye"></i>
+                            </div>
+                        </div>
+                        <div class="mt-3 pt-2 border-top small text-muted">
+                            Độc giả có thể tìm kiếm và mượn
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-md-4">
+                    <div class="panel p-3 border-0 shadow-sm h-100">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <div class="text-muted small fw-semibold text-uppercase">Sách đang ẩn</div>
+                                <h2 class="h2 fw-bold text-secondary mb-0 mt-2" th:text="${hiddenBooks}">0</h2>
+                            </div>
+                            <div class="icon-circle bg-secondary bg-opacity-10 text-secondary fs-3" style="width: 52px; height: 52px;">
+                                <i class="bi bi-eye-slash"></i>
+                            </div>
+                        </div>
+                        <div class="mt-3 pt-2 border-top small text-muted">
+                            Tạm ẩn khỏi trang tra cứu độc giả
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bảng sách mới bổ sung gần đây -->
+            <div class="panel p-4 border-0 shadow-sm mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3 class="h5 fw-bold mb-0">
+                        <i class="bi bi-clock-history me-2 text-primary"></i>Đầu sách mới bổ sung
+                    </h3>
+                    <a class="btn btn-outline-primary btn-sm" th:href="@{/librarian/books}">
+                        Xem tất cả <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 60px;">Bìa</th>
+                                <th>Mã ISBN</th>
+                                <th>Tên sách</th>
+                                <th>Thể loại</th>
+                                <th>Tác giả</th>
+                                <th class="text-center" style="width: 120px;">Trạng thái</th>
+                                <th class="text-center" style="width: 100px;">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${recentBooks.isEmpty()}">
+                                <td colspan="7" class="text-center py-4 text-muted">Chưa có đầu sách nào trong hệ thống.</td>
+                            </tr>
+                            <tr th:each="b : ${recentBooks}">
+                                <td>
+                                    <img th:if="${b.coverUrl != null}" th:src="@{${b.coverUrl}}" alt="Bìa"
+                                         style="width: 36px; height: 48px; object-fit: contain; border-radius: 4px; background: #e9ecef; border: 1px solid var(--lib-border);">
+                                    <div th:if="${b.coverUrl == null}"
+                                         style="width: 36px; height: 48px; border-radius: 4px; background: #f0ece0; border: 1px solid var(--lib-border); display: flex; align-items: center; justify-content: center; font-size: 9px; color: #888;">
+                                        Không ảnh
+                                    </div>
+                                </td>
+                                <td><code class="text-dark fw-semibold" th:text="${b.isbn}">ISBN</code></td>
+                                <td class="fw-semibold text-dark" th:text="${b.title}">Tên sách</td>
+                                <td>
+                                    <span class="badge bg-light text-dark border" th:if="${b.category != null}" th:text="${b.category.name}">Thể loại</span>
+                                    <span class="text-muted small" th:if="${b.category == null}">-</span>
+                                </td>
+                                <td>
+                                    <span th:if="${!b.authors.isEmpty()}" th:text="${#strings.listJoin(b.authors.![name], ', ')}">Tác giả</span>
+                                    <span class="text-muted small" th:if="${b.authors.isEmpty()}">Chưa rõ</span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-success" th:if="${b.visible}">Đang hiện</span>
+                                    <span class="badge bg-secondary" th:unless="${b.visible}">Đã ẩn</span>
+                                </td>
+                                <td class="text-center">
+                                    <a class="btn btn-outline-secondary btn-sm" th:href="@{/librarian/books/{id}/edit(id=${b.id})}" title="Chỉnh sửa">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </main>
+    </div>
+</div>
+
+</body>
+</html>
+
