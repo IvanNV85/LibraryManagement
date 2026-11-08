@@ -3,6 +3,9 @@ package fu.libmanagement.common.enums;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * Nguồn lập phiếu mượn sách.
+ */
 @Getter
 @RequiredArgsConstructor
 public enum LoanSource {
@@ -11,3 +14,4 @@ public enum LoanSource {
 
     private final String label;
 }
+

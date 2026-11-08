@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout-librarian :: head('Quản lý đầu sách')}"></head>
+<body>
+
+<div class="dashboard-layout">
+    <!-- Sidebar với tab 'books' đang active -->
+    <aside th:replace="~{fragments/layout-librarian :: sidebar('books')}"></aside>
+
+    <!-- Khu vực làm việc chính -->
+    <div class="dashboard-main">
+        <header th:replace="~{fragments/layout-librarian :: topbar('Quản lý đầu sách')}"></header>
+
+        <main class="dashboard-content">
+            <div class="panel border-0 shadow-sm p-4">
+
+                <!-- Tiêu đề và nút hành động -->
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+                    <div>
+                        <h1 class="h4 mb-1"><i class="bi bi-journal-bookmark me-2 text-primary"></i>Quản lý đầu sách</h1>
+                        <p class="text-muted small mb-0">Biên mục và quản lý trạng thái hiển thị của các đầu sách trong thư viện.</p>
+                    </div>
+                    <div>
+                        <a class="btn btn-primary" th:href="@{/librarian/books/new}">
+                            <i class="bi bi-plus-lg me-1"></i> Thêm đầu sách mới
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Thông báo thành công / lỗi -->
+                <div th:replace="~{fragments/layout :: alerts}"></div>
+
+                <!-- Thanh tìm kiếm -->
+                <div class="row g-2 align-items-center mb-4">
+                    <div class="col-12 col-md-6 col-lg-5">
+                        <form th:action="@{/librarian/books}" method="get" class="d-flex gap-2">
+                            <input type="text" class="form-control" name="keyword" th:value="${keyword}"
+                                   placeholder="Tìm theo tên sách, ISBN, tác giả...">
+                            <button class="btn btn-outline-primary" type="submit" title="Tìm kiếm">
+                                <i class="bi bi-search"></i>
+                            </button>
+                            <a th:if="${!keyword.isEmpty()}" th:href="@{/librarian/books}" class="btn btn-outline-secondary" title="Xóa bộ lọc">
+                                <i class="bi bi-x-lg"></i>
+                            </a>
+                        </form>
+                    </div>
+                    <div class="col-12 col-md-6 col-lg-7 text-md-end text-muted small">
+                        Tổng số: <strong th:text="${result.totalElements}">0</strong> đầu sách
+                        <span th:if="${!keyword.isEmpty()}">(lọc theo từ khóa "<em><span th:text="${keyword}"></span></em>")</span>
+                    </div>
+                </div>
+
+                <!-- Bảng danh sách sách -->
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 50px;" class="text-center">#</th>
+                                <th style="width: 70px;">Bìa</th>
+                                <th style="width: 140px;">ISBN</th>
+                                <th>Thông tin sách</th>
+                                <th>Thể loại</th>
+                                <th>Tác giả</th>
+                                <th style="width: 90px;" class="text-center">Năm XB</th>
+                                <th style="width: 120px;" class="text-center">Trạng thái</th>
+                                <th style="width: 120px;" class="text-center">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${books.isEmpty()}">
+                                <td colspan="9" class="text-center py-4 text-muted">
+                                    <i class="bi bi-inbox fs-2 d-block mb-1"></i>
+                                    Không tìm thấy đầu sách nào phù hợp.
+                                </td>
+                            </tr>
+                            <tr th:each="book, stat : ${books}">
+                                <td class="text-center text-muted" th:text="${stat.count + result.number * result.size}">1</td>
+                                <td>
+                                    <img th:if="${book.coverUrl != null}" th:src="@{${book.coverUrl}}" alt="Bìa"
+                                         style="width: 44px; height: 60px; object-fit: contain; border-radius: 4px; background: #e9ecef; border: 1px solid var(--lib-border);">
+                                    <div th:if="${book.coverUrl == null}"
+                                         style="width: 44px; height: 60px; border-radius: 4px; background: #f0ece0; border: 1px solid var(--lib-border); display: flex; align-items: center; justify-content: center; font-size: 10px; color: #888; text-align: center;">
+                                        Không ảnh
+                                    </div>
+                                </td>
+                                <td>
+                                    <code class="text-dark fw-semibold" th:text="${book.isbn}">9786040000016</code>
+                                </td>
+                                <td>
+                                    <div class="fw-semibold text-dark" th:text="${book.title}">Tên sách</div>
+                                    <small class="text-muted" th:text="${book.publisher != null ? book.publisher : 'Chưa rõ NXB'}">NXB</small>
+                                </td>
+                                <td>
+                                    <span class="badge bg-light text-dark border" th:if="${book.category != null}" th:text="${book.category.name}">Thể loại</span>
+                                    <span class="text-muted small" th:if="${book.category == null}">-</span>
+                                </td>
+                                <td>
+                                    <span th:if="${!book.authors.isEmpty()}" th:text="${#strings.listJoin(book.authors.![name], ', ')}">Tác giả</span>
+                                    <span class="text-muted small" th:if="${book.authors.isEmpty()}">Chưa rõ</span>
+                                </td>
+                                <td class="text-center" th:text="${book.publishYear != null ? book.publishYear : '-'}">2020</td>
+                                <td class="text-center">
+                                    <span class="badge bg-success" th:if="${book.visible}">Đang hiện</span>
+                                    <span class="badge bg-secondary" th:unless="${book.visible}">Đã ẩn</span>
+                                </td>
+                                <td class="text-center">
+                                    <div class="btn-group btn-group-sm">
+                                        <a class="btn btn-outline-secondary" th:href="@{/librarian/books/{id}/edit(id=${book.id})}" title="Chỉnh sửa thông tin">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <form th:action="@{/librarian/books/{id}/toggle-visibility(id=${book.id})}" method="post" class="d-inline"
+                                              th:onsubmit="'return confirm(\'Bạn có chắc muốn ' + (${book.visible} ? 'ẩn' : 'hiện') + ' đầu sách này?\');'">
+                                            <button type="submit" class="btn btn-outline-warning" th:title="${book.visible} ? 'Ẩn sách khỏi độc giả' : 'Hiện sách cho độc giả'">
+                                                <i class="bi" th:classappend="${book.visible} ? 'bi-eye-slash' : 'bi-eye'"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Phân trang -->
+                <nav th:replace="~{fragments/layout :: pagination(${result}, @{/librarian/books(keyword=${keyword})})}"></nav>
+            </div>
+        </main>
+    </div>
+</div>
+
+</body>
+</html>
