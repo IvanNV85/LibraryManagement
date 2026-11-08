@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Mượn sách')}"></head>
+<body>
+<th:block th:replace="~{borrowing/assets :: assets}"></th:block>
+<div th:replace="~{fragments/layout :: navbar}"></div>
+
+<!-- UC11 Gửi yêu cầu mượn / UC13 Đặt trước. Trang nhận bookId, hiện thông tin sách và nút phù hợp. -->
+<div class="container my-4" style="max-width: 860px;">
+    <div class="panel page-spacer">
+        <div class="borrow-page-head">
+            <h1 class="h4">Mượn sách</h1>
+            <div th:replace="~{borrowing/assets :: subnav('')}"></div>
+        </div>
+
+        <div th:replace="~{fragments/layout :: alerts}"></div>
+
+        <div class="borrow-detail">
+            <img class="borrow-detail-cover"
+                 th:src="${info.coverUrl != null} ? @{${info.coverUrl}} : @{/images/borrowing/default-cover.svg}"
+                 alt="Ảnh bìa">
+
+            <div class="borrow-detail-info">
+                <h2 class="h4 mb-1" th:text="${info.title}">Tên sách</h2>
+                <div class="text-muted" th:text="${info.authorNames}">Tác giả</div>
+                <div class="my-2">
+                    <span class="badge bg-secondary" th:if="${info.categoryName != null}" th:text="${info.categoryName}">Thể loại</span>
+                    <span class="small text-muted ms-1">ISBN: <span th:text="${info.isbn}"></span></span>
+                </div>
+
+                <p class="mb-3">
+                    <span class="borrow-avail borrow-avail--yes" th:if="${info.availableCopies > 0}">
+                        <i class="bi bi-check-circle"></i> Còn <span th:text="${info.availableCopies}">1</span> bản
+                    </span>
+                    <span class="borrow-avail borrow-avail--no" th:if="${info.availableCopies == 0}">
+                        <i class="bi bi-x-circle"></i> Hết bản
+                    </span>
+                </p>
+
+                <th:block th:replace="~{borrowing/borrow-actions :: panel(${info})}"></th:block>
+
+                <div class="borrow-rules">
+                    <h2>Điều kiện để mượn</h2>
+                    <ul>
+                        <li>Thẻ thư viện còn hạn sử dụng.</li>
+                        <li>Không còn khoản phạt chưa thanh toán và không có sách quá hạn.</li>
+                        <li>Chưa vượt số sách tối đa được mượn cùng lúc (tính cả yêu cầu đang chờ).</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

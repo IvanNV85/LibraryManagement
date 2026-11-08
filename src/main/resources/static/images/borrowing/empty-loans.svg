@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 220" width="320" height="220" role="img" aria-label="Chưa có phiếu mượn">
+  <ellipse cx="160" cy="196" rx="120" ry="10" fill="#d6d0bd"/>
+  <rect x="62" y="104" width="46" height="84" rx="4" fill="#1d6fb8"/>
+  <rect x="62" y="104" width="8" height="84" fill="#000" fill-opacity="0.18"/>
+  <rect x="112" y="84" width="42" height="104" rx="4" fill="#b23a48"/>
+  <rect x="112" y="84" width="8" height="104" fill="#000" fill-opacity="0.18"/>
+  <rect x="158" y="116" width="50" height="72" rx="4" fill="#2f8f5b"/>
+  <rect x="158" y="116" width="8" height="72" fill="#000" fill-opacity="0.18"/>
+  <rect x="212" y="96" width="40" height="92" rx="4" fill="#e0a82e"/>
+  <rect x="212" y="96" width="8" height="92" fill="#000" fill-opacity="0.18"/>
+  <rect x="54" y="188" width="206" height="8" rx="3" fill="#8a8575"/>
+  <g fill="none" stroke="#2b2a26" stroke-width="3" stroke-linecap="round">
+    <circle cx="238" cy="52" r="22" fill="#fff"/>
+    <line x1="238" y1="52" x2="238" y2="38"/>
+    <line x1="238" y1="52" x2="248" y2="58"/>
+  </g>
+</svg>

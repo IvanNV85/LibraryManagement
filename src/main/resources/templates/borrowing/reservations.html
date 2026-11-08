@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Sách đặt trước')}"></head>
+<body>
+<th:block th:replace="~{borrowing/assets :: assets}"></th:block>
+<div th:replace="~{fragments/layout :: navbar}"></div>
+
+<!-- UC13 Đặt trước sách đang hết -->
+<div class="container my-4">
+    <div class="panel page-spacer">
+        <div class="borrow-page-head">
+            <h1 class="h4">Sách đặt trước</h1>
+            <div th:replace="~{borrowing/assets :: subnav('reservations')}"></div>
+        </div>
+
+        <div th:replace="~{fragments/layout :: alerts}"></div>
+
+        <div class="empty-state" th:if="${reservations.isEmpty()}">
+            <img th:src="@{/images/borrowing/empty-reservations.svg}" alt="">
+            <h2>Bạn chưa đặt trước cuốn nào</h2>
+            <p>Khi một cuốn sách hết bản, trang mượn sách sẽ có nút "Đặt trước". Thủ thư sẽ liên hệ khi sách có lại.</p>
+            <a class="btn btn-primary" th:href="@{/books}"><i class="bi bi-search"></i> Xem danh mục sách</a>
+        </div>
+
+        <div class="loan-list" th:if="${!reservations.isEmpty()}">
+            <div class="loan-card" th:each="r : ${reservations}"
+                 th:classappend="${'loan-card--' + r.status.name().toLowerCase()}">
+                <img class="loan-cover"
+                     th:src="${r.book.coverUrl != null} ? @{${r.book.coverUrl}} : @{/images/borrowing/default-cover.svg}"
+                     alt="Ảnh bìa">
+                <div class="loan-body">
+                    <div class="d-flex flex-wrap align-items-center gap-2">
+                        <a class="loan-title" th:href="@{/reader/loans/new(bookId=${r.book.id})}" th:text="${r.book.title}">Tên sách</a>
+                        <span class="badge" th:classappend="${r.status.badgeClass}" th:text="${r.status.label}">Trạng thái</span>
+                    </div>
+                    <div class="loan-meta">
+                        <span>Đặt lúc <strong th:text="${#temporals.format(r.createdAt, 'dd/MM/yyyy HH:mm')}">01/01/2026</strong></span>
+                    </div>
+                    <div class="loan-note" th:if="${r.status.name() == 'READY' and r.holdUntil != null}">
+                        <i class="bi bi-bookmark-check"></i> Sách đang được giữ cho bạn đến
+                        <strong th:text="${#temporals.format(r.holdUntil, 'dd/MM/yyyy HH:mm')}">01/01/2026</strong>
+                    </div>
+                </div>
+                <div class="loan-actions">
+                    <form th:if="${r.status.name() == 'WAITING' or r.status.name() == 'READY'}"
+                          th:action="@{/reader/reservations/{id}/cancel(id=${r.id})}" method="post"
+                          data-once data-confirm="Hủy đặt trước này?">
+                        <button class="btn btn-sm btn-outline-danger" type="submit">Hủy đặt trước</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <nav th:replace="~{fragments/layout :: pagination(${result}, @{/reader/reservations})}"></nav>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>
