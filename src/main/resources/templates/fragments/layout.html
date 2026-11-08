@@ -69,13 +69,13 @@
                       thêm một thẻ <a class="account-item"> vào file đó (xem hướng dẫn trong từng file),
                       KHÔNG cần sửa file layout này:
                         độc giả            : fragments/menu-reader.html
-                        thủ thư (và admin) : fragments/menu-librarian.html
+                        thủ thư            : fragments/menu-librarian.html
                         admin              : fragments/menu-admin.html
                     -->
                     <th:block th:if="${currentUser.reader}">
                         <th:block th:replace="~{fragments/menu-reader :: items}"></th:block>
                     </th:block>
-                    <th:block th:if="${currentUser.staff}">
+                    <th:block th:if="${currentUser.librarian}">
                         <th:block th:replace="~{fragments/menu-librarian :: items}"></th:block>
                     </th:block>
                     <th:block th:if="${currentUser.admin}">

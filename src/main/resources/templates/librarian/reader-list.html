@@ -17,7 +17,7 @@
         <div th:replace="~{fragments/layout :: alerts}"></div>
 
         <!-- Tìm kiếm và lọc -->
-        <form class="row g-3 align-items-center mt-2" th:action="@{/librarian/readers}" method="get">
+        <form class="row g-3 align-items-center mt-2" th:action="${currentUser.admin} ? @{/admin/readers} : @{/librarian/readers}" method="get">
             <div class="col-md-6">
                 <input type="text" class="form-control" name="keyword" th:value="${keyword}"
                        placeholder="Nhập họ tên, email hoặc mã thẻ...">
@@ -63,23 +63,23 @@
                 <td>
                     <!-- Thẻ chờ duyệt: hiện nút Duyệt -->
                     <form th:if="${r.status.name() == 'PENDING'}" class="d-inline"
-                          th:action="@{/librarian/readers/{id}/approve(id=${r.cardId})}" method="post">
+                          th:action="${currentUser.admin} ? @{/admin/readers/{id}/approve(id=${r.cardId})} : @{/librarian/readers/{id}/approve(id=${r.cardId})}" method="post">
                         <button type="submit" class="btn btn-success btn-sm">Duyệt thẻ</button>
                     </form>
 
                     <!-- Thẻ đang hoạt động: hiện nút Gia hạn và Khóa -->
                     <form th:if="${r.status.name() == 'ACTIVE'}" class="d-inline"
-                          th:action="@{/librarian/readers/{id}/extend(id=${r.cardId})}" method="post">
+                          th:action="${currentUser.admin} ? @{/admin/readers/{id}/extend(id=${r.cardId})} : @{/librarian/readers/{id}/extend(id=${r.cardId})}" method="post">
                         <button type="submit" class="btn btn-primary btn-sm">Gia hạn</button>
                     </form>
                     <form th:if="${r.status.name() == 'ACTIVE'}" class="d-inline"
-                          th:action="@{/librarian/readers/{id}/lock(id=${r.cardId})}" method="post">
+                          th:action="${currentUser.admin} ? @{/admin/readers/{id}/lock(id=${r.cardId})} : @{/librarian/readers/{id}/lock(id=${r.cardId})}" method="post">
                         <button type="submit" class="btn btn-danger btn-sm">Khóa</button>
                     </form>
 
                     <!-- Thẻ bị khóa: hiện nút Mở khóa -->
                     <form th:if="${r.status.name() == 'LOCKED'}" class="d-inline"
-                          th:action="@{/librarian/readers/{id}/unlock(id=${r.cardId})}" method="post">
+                          th:action="${currentUser.admin} ? @{/admin/readers/{id}/unlock(id=${r.cardId})} : @{/librarian/readers/{id}/unlock(id=${r.cardId})}" method="post">
                         <button type="submit" class="btn btn-secondary btn-sm">Mở khóa</button>
                     </form>
                 </td>
@@ -88,7 +88,9 @@
         </table></div>
 
         <!-- Phân trang -->
-        <nav th:replace="~{fragments/layout :: pagination(${result}, @{/librarian/readers(keyword=${keyword}, status=${status})})}"></nav>
+        <th:block th:with="readerListUrl=${currentUser.admin} ? @{/admin/readers(keyword=${keyword}, status=${status})} : @{/librarian/readers(keyword=${keyword}, status=${status})}">
+            <nav th:replace="~{fragments/layout :: pagination(${result}, ${readerListUrl})}"></nav>
+        </th:block>
     </div>
 </div>
 

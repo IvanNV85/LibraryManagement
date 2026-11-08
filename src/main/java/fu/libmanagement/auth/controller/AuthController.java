@@ -28,7 +28,10 @@ public class AuthController {
     public String loginPage(HttpServletRequest request) {
         SessionUser user = SessionUser.get(request);
         if (user != null) {
-            if (user.isStaff()) {
+            if (user.isAdmin()) {
+                return "redirect:/admin/dashboard";
+            }
+            if (user.isLibrarian()) {
                 return "redirect:/librarian/dashboard";
             }
             return "redirect:/";
@@ -44,7 +47,10 @@ public class AuthController {
             HttpSession session = request.getSession();
             request.changeSessionId(); // đổi id session sau khi đăng nhập để chống session fixation
             session.setAttribute(SessionUser.KEY, user);
-            if (user.isStaff()) {
+            if (user.isAdmin()) {
+                return "redirect:/admin/dashboard";
+            }
+            if (user.isLibrarian()) {
                 return "redirect:/librarian/dashboard";
             }
             return "redirect:/";

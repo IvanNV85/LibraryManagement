@@ -133,7 +133,7 @@
 
 <!-- Khung Sidebar điều hướng cho Thủ thư / Admin -->
 <aside th:fragment="sidebar(activeTab)" class="dashboard-sidebar">
-    <a th:href="@{/librarian/dashboard}" class="sidebar-brand">
+    <a th:href="${currentUser != null and currentUser.admin} ? @{/admin/dashboard} : @{/librarian/dashboard}" class="sidebar-brand">
         <i class="bi bi-book-half"></i>
         <div class="sidebar-brand-text">
             <span class="sidebar-brand-title">Thư viện</span>
@@ -144,10 +144,12 @@
     <div class="sidebar-nav">
         <!-- Tổng quan -->
         <div class="sidebar-heading">Tổng quan</div>
-        <a class="sidebar-link" th:classappend="${activeTab == 'dashboard'} ? 'active'" th:href="@{/librarian/dashboard}">
+        <a class="sidebar-link" th:classappend="${activeTab == 'dashboard'} ? 'active'"
+           th:href="${currentUser != null and currentUser.admin} ? @{/admin/dashboard} : @{/librarian/dashboard}">
             <i class="bi bi-speedometer2"></i> <span>Dashboard</span>
         </a>
 
+        <th:block th:if="${currentUser != null and currentUser.librarian}">
         <!-- Quản lý Sách -->
         <div class="sidebar-heading">Quản lý Sách</div>
         <a class="sidebar-link" th:classappend="${activeTab == 'books'} ? 'active'" th:href="@{/librarian/books}">
@@ -180,17 +182,21 @@
         <a class="sidebar-link" th:classappend="${activeTab == 'readers'} ? 'active'" th:href="@{/librarian/readers}">
             <i class="bi bi-person-badge"></i> <span>Quản lý độc giả (UC5)</span>
         </a>
+        </th:block>
 
         <th:block th:if="${currentUser != null and currentUser.admin}">
             <div class="sidebar-heading">Quản trị hệ thống</div>
+            <a class="sidebar-link" th:classappend="${activeTab == 'readers'} ? 'active'" th:href="@{/admin/readers}">
+                <i class="bi bi-person-badge"></i> <span>Quản lý độc giả</span>
+            </a>
             <a class="sidebar-link" th:classappend="${activeTab == 'admin-staff'} ? 'active'" th:href="@{/admin/staff}">
                 <i class="bi bi-people"></i> <span>Quản lý nhân viên (UC23)</span>
             </a>
             <a class="sidebar-link" th:classappend="${activeTab == 'admin-settings'} ? 'active'" th:href="@{/admin/settings}">
                 <i class="bi bi-gear"></i> <span>Cấu hình quy định (UC24)</span>
             </a>
-            <a class="sidebar-link" th:classappend="${activeTab == 'admin-reports'} ? 'active'" th:href="@{/admin/reports}">
-                <i class="bi bi-graph-up"></i> <span>Báo cáo thống kê (UC25)</span>
+            <a class="sidebar-link" th:classappend="${activeTab == 'purchase-orders'} ? 'active'" th:href="@{/admin/purchase-orders}">
+                <i class="bi bi-truck"></i> <span>Duyệt phiếu nhập</span>
             </a>
         </th:block>
     </div>

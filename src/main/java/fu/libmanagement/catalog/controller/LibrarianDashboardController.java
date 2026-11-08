@@ -2,6 +2,8 @@ package fu.libmanagement.catalog.controller;
 
 import fu.libmanagement.catalog.entity.Book;
 import fu.libmanagement.catalog.repository.BookRepository;
+import fu.libmanagement.auth.dto.SessionUser;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.List;
 
 /**
- * Controller màn hình Dashboard tổng quan dành cho Thủ thư và Admin.
+ * Dashboard thủ thư; tài khoản admin được chuyển đến dashboard riêng.
  */
 @Controller
 @RequestMapping("/librarian")
@@ -21,7 +23,11 @@ public class LibrarianDashboardController {
     private final BookRepository bookRepository;
 
     @GetMapping({"", "/dashboard"})
-    public String dashboard(Model model) {
+    public String dashboard(Model model, HttpServletRequest request) {
+        SessionUser user = SessionUser.get(request);
+        if (user != null && user.isAdmin()) {
+            return "redirect:/admin/dashboard";
+        }
         long totalBooks = bookRepository.count();
         long visibleBooks = bookRepository.countByVisibleTrue();
         long hiddenBooks = bookRepository.countByVisibleFalse();
