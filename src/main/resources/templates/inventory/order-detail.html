@@ -10,9 +10,9 @@
     <h3>CHI TIẾT PHIẾU NHẬP #<span th:text="${order.id}"></span></h3><hr>
     <div th:replace="~{fragments/layout :: alerts}"></div>
     <p><strong>Nhà cung cấp:</strong> <span th:text="${order.supplier}"></span> · <strong>Trạng thái:</strong> <span th:text="${order.status}"></span></p>
-    <p><strong>Người lập:</strong> <span th:text="${order.creator}"></span> · <strong>Ngày lập:</strong> <span th:text="${order.createdAt}"></span></p>
-    <p th:if="${order.approvedAt != null}"><strong>Người duyệt:</strong> <span th:text="${order.approver}"></span> · <strong>Ngày duyệt:</strong> <span th:text="${order.approvedAt}"></span></p>
-    <p th:if="${order.receivedAt != null}"><strong>Ngày nhận kho:</strong> <span th:text="${order.receivedAt}"></span></p>
+    <p><strong>Người lập:</strong> <span th:text="${order.creator}"></span> · <strong>Ngày lập:</strong> <span th:text="${#temporals.format(order.createdAt, 'dd/MM/yyyy')}"></span></p>
+    <p th:if="${order.approvedAt != null}"><strong>Người duyệt:</strong> <span th:text="${order.approver}"></span> · <strong>Ngày duyệt:</strong> <span th:text="${#temporals.format(order.approvedAt, 'dd/MM/yyyy')}"></span></p>
+    <p th:if="${order.receivedAt != null}"><strong>Ngày nhận kho:</strong> <span th:text="${#temporals.format(order.receivedAt, 'dd/MM/yyyy')}"></span></p>
     <p th:if="${order.note != null and !order.note.isEmpty()}"><strong>Ghi chú:</strong> <span th:text="${order.note}"></span></p>
     <form th:if="${currentUser.admin and order.status == 'PENDING'}" th:action="@{/admin/purchase-orders/{id}/approve(id=${order.id})}" method="post" class="mb-3">
         <button class="btn btn-success" type="submit">Duyệt phiếu</button>

@@ -14,7 +14,7 @@
         <thead class="table-light"><tr><th>Mã phiếu</th><th>Nhà cung cấp</th><th>Người lập</th><th>Ngày lập</th><th>Trạng thái</th><th>Nhận kho</th><th></th></tr></thead>
         <tbody><tr th:each="order : ${orders}">
             <td th:text="${order.id}"></td><td th:text="${order.supplier}"></td><td th:text="${order.creator}"></td>
-            <td th:text="${order.createdAt}"></td><td th:text="${order.status}"></td>
+            <td th:text="${#temporals.format(order.createdAt, 'dd/MM/yyyy')}"></td><td th:text="${order.status}"></td>
             <td th:text="${order.receivedAt == null ? 'Chưa nhận' : 'Đã nhận'}"></td>
             <td><a th:href="${currentUser.admin} ? @{/admin/purchase-orders/{id}(id=${order.id})} : @{/librarian/purchase-orders/{id}(id=${order.id})}">Chi tiết</a></td>
         </tr></tbody>
