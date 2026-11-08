@@ -8,7 +8,9 @@
   Gợi ý: UC6 quản lý độc giả, UC16 duyệt yêu cầu mượn, UC17 lập phiếu, UC18 trả sách, UC20 đầu sách, UC21 bản sao.
 -->
 <th:block th:fragment="items">
-    <!-- Thêm các mục của thủ thư bên dưới dòng này -->
+    <a class="account-item" th:href="@{/librarian/readers}">
+        <span class="icon-circle"><i class="bi bi-people"></i></span>Quản lý độc giả
+    </a>
 </th:block>
 </body>
 </html>

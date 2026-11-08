@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Chi tiết sách')}"></head>
+<body>
+<div th:replace="~{fragments/layout :: navbar}"></div>
+
+<div class="container my-4">
+    <div class="panel page-spacer">
+
+        <div th:replace="~{fragments/layout :: alerts}"></div>
+
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <img th:if="${book.coverUrl != null}" class="book-cover" th:src="@{${book.coverUrl}}" alt="Ảnh bìa">
+                <div th:if="${book.coverUrl == null}" class="book-cover book-cover-empty">Chưa có ảnh bìa</div>
+            </div>
+
+            <div class="col-md-8">
+                <h3 th:text="${book.title}">Tên sách</h3>
+                <hr>
+
+                <table class="table table-borderless">
+                    <tr>
+                        <th style="width: 160px;">Tác giả</th>
+                        <td th:text="${book.authorNames}">Tác giả</td>
+                    </tr>
+                    <tr>
+                        <th>Thể loại</th>
+                        <td th:text="${book.categoryName}">Thể loại</td>
+                    </tr>
+                    <tr>
+                        <th>Nhà xuất bản</th>
+                        <td th:text="${book.publisher}">NXB</td>
+                    </tr>
+                    <tr>
+                        <th>Năm xuất bản</th>
+                        <td th:text="${book.publishYear}">2020</td>
+                    </tr>
+                    <tr>
+                        <th>ISBN</th>
+                        <td th:text="${book.isbn}">ISBN</td>
+                    </tr>
+                    <tr>
+                        <th>Tình trạng</th>
+                        <td>
+                            <span th:if="${book.totalCopies == 0}" class="text-muted">Chưa có bản sao</span>
+                            <span th:if="${book.totalCopies > 0 and book.availableCopies > 0}" class="text-success">
+                                Còn <span th:text="${book.availableCopies}">1</span>
+                                / <span th:text="${book.totalCopies}">2</span> bản
+                            </span>
+                            <span th:if="${book.totalCopies > 0 and book.availableCopies == 0}" class="text-danger">
+                                Hết sách (0 / <span th:text="${book.totalCopies}">2</span> bản)
+                            </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Vị trí kệ</th>
+                        <td th:text="${book.shelfLocations != null} ? ${book.shelfLocations} : '—'">Kệ 3</td>
+                    </tr>
+                    <tr>
+                        <th>Đánh giá</th>
+                        <td>
+                            <span th:if="${book.averageRating != null}">
+                                <span th:text="${book.averageRating}">4.5</span> / 5
+                                (<span th:text="${book.reviewCount}">3</span> đánh giá)
+                            </span>
+                            <span th:if="${book.averageRating == null}" class="text-muted">Chưa có đánh giá</span>
+                        </td>
+                    </tr>
+                </table>
+
+
+                <!-- Khách cần đăng nhập để mượn sách -->
+                <div th:if="${currentUser == null}">
+                    <a class="btn btn-primary" th:href="@{/login}">Đăng nhập để mượn sách</a>
+                </div>
+
+                <!-- Độc giả -->
+                <div th:if="${currentUser != null and currentUser.reader}">
+                     <button th:if="${book.availableCopies > 0}" type="button" class="btn btn-primary" disabled>
+                        Gửi yêu cầu mượn
+                    </button>
+                    <span th:if="${book.availableCopies == 0}" class="text-danger">
+                        Sách đã hết, vui lòng liên hệ thủ thư.
+                    </span>
+
+                    <form th:if="${!book.favorite}" class="d-inline"
+                          th:action="@{/reader/favorites/{id}/add(id=${book.id})}" method="post">
+                        <button type="submit" class="btn btn-outline-danger">Thêm vào yêu thích</button>
+                    </form>
+                    <form th:if="${book.favorite}" class="d-inline"
+                          th:action="@{/reader/favorites/{id}/remove(id=${book.id})}" method="post">
+                        <input type="hidden" name="from" value="detail">
+                        <button type="submit" class="btn btn-danger">Bỏ yêu thích</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mô tả -->
+        <h4 class="mt-4">Mô tả</h4>
+        <p th:text="${book.description != null} ? ${book.description} : 'Chưa có mô tả.'">Mô tả</p>
+
+        <h4 class="mt-4">Đánh giá của độc giả</h4>
+
+        <div th:if="${currentUser != null and currentUser.reader}" class="mb-3">
+
+            <!--Được đánh giá-->
+            <form th:if="${canReview}" th:action="@{/reader/books/{id}/review(id=${book.id})}" method="post">
+                <h6 th:text="${reviewForm.rating == null} ? 'Viết đánh giá của bạn' : 'Đánh giá của bạn (cập nhật)'">Viết đánh giá</h6>
+
+                <div class="mb-2">
+                    <select class="form-select" name="rating" required style="max-width: 200px;">
+                        <option value="">-- Chọn số sao --</option>
+                        <option th:each="i : ${#numbers.sequence(5, 1, -1)}" th:value="${i}" th:text="${i} + ' sao'"
+                                th:selected="${reviewForm.rating != null and reviewForm.rating == i}">5 sao</option>
+                    </select>
+                </div>
+
+                <div class="mb-2">
+            <textarea class="form-control" name="comment" rows="3" maxlength="1000"
+                      placeholder="Nhận xét của bạn về cuốn sách "
+                      th:text="${reviewForm.comment}"></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary"
+                        th:text="${reviewForm.rating == null} ? 'Gửi đánh giá' : 'Cập nhật đánh giá'">Gửi đánh giá</button>
+            </form>
+
+            <!--Chưa mượn, không đánh giá đc-->
+            <p th:if="${!canReview}" class="text-muted">
+                Chỉ độc giả đã mượn cuốn sách này mới được đánh giá.
+            </p>
+        </div>
+
+        <div class="alert alert-info" th:if="${reviews.isEmpty()}">Chưa có đánh giá nào.</div>
+
+        <table class="table table-bordered" th:if="${!reviews.isEmpty()}">
+            <thead>
+            <tr>
+                <th>Độc giả</th>
+                <th>Số sao</th>
+                <th>Nhận xét</th>
+                <th>Ngày</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="r : ${reviews}">
+                <td th:text="${r.readerName}">Tên</td>
+                <td th:text="${r.rating} + ' / 5'">5 / 5</td>
+                <td th:text="${r.comment}">Nhận xét</td>
+                <td th:text="${#temporals.format(r.createdAt, 'dd/MM/yyyy HH:mm')}">01/01/2026</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>
