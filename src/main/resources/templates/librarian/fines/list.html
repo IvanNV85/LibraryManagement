@@ -1,274 +1,305 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head th:replace="~{fragments/layout-librarian :: head('Quản lý và thu tiền phạt')}"></head>
+
 <body>
 
-<div class="dashboard-layout">
-    <!-- Sidebar với tab 'fines' active -->
-    <aside th:replace="~{fragments/layout-librarian :: sidebar('fines')}"></aside>
+    <div class="dashboard-layout">
+        <!-- Sidebar với tab 'fines' active -->
+        <aside th:replace="~{fragments/layout-librarian :: sidebar('fines')}"></aside>
 
-    <!-- Khu vực làm việc chính -->
-    <div class="dashboard-main">
-        <header th:replace="~{fragments/layout-librarian :: topbar('Quản lý và thu tiền phạt')}"></header>
+        <!-- Khu vực làm việc chính -->
+        <div class="dashboard-main">
+            <header th:replace="~{fragments/layout-librarian :: topbar('Quản lý và thu tiền phạt')}"></header>
 
-        <main class="dashboard-content">
-            <!-- Thẻ tóm tắt chỉ số KPI nhanh (Chia đều 2 cột 50% - 50%) -->
-            <div class="row g-3 mb-4">
-                <div class="col-12 col-md-6">
-                    <div class="card border-0 shadow-sm p-3 px-4 bg-white h-100">
-                        <div class="d-flex align-items-center">
-                            <div class="rounded-3 p-3 bg-danger-subtle text-danger me-3 fs-2">
-                                <i class="bi bi-exclamation-octagon"></i>
-                            </div>
-                            <div>
-                                <div class="text-muted small fw-medium text-uppercase">Chưa thanh toán</div>
-                                <h3 class="h4 mb-0 text-danger fw-bold"
-                                    th:text="${#numbers.formatDecimal(summary.totalUnpaidAmount, 0, 'COMMA', 0, 'POINT')} + ' đ'">0 đ</h3>
-                                <div class="small text-muted" th:text="${summary.unpaidCount} + ' khoản phạt chưa thu'">0 khoản</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-12 col-md-6">
-                    <div class="card border-0 shadow-sm p-3 px-4 bg-white h-100">
-                        <div class="d-flex align-items-center">
-                            <div class="rounded-3 p-3 bg-success-subtle text-success me-3 fs-2">
-                                <i class="bi bi-check2-circle"></i>
-                            </div>
-                            <div>
-                                <div class="text-muted small fw-medium text-uppercase">Tổng tiền đã thu</div>
-                                <h3 class="h4 mb-0 text-success fw-bold"
-                                    th:text="${#numbers.formatDecimal(summary.totalPaidAmount, 0, 'COMMA', 0, 'POINT')} + ' đ'">0 đ</h3>
-                                <div class="small text-muted" th:text="${summary.paidCount} + ' khoản đã thanh toán'">0 khoản</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Panel chính: Bộ lọc & Bảng danh sách phạt -->
-            <div class="panel border-0 shadow-sm p-4">
-                <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
-                    <div>
-                        <h1 class="h4 mb-1">Danh sách khoản phạt (UC19)</h1>
-                        <p class="text-muted small mb-0">Tra cứu các khoản phạt quá hạn và thu tiền phạt trực tiếp tại quầy thư viện.</p>
-                    </div>
-                </div>
-
-                <!-- Thông báo flash message -->
-                <div th:replace="~{fragments/layout :: alerts}"></div>
-
-                <!-- Form tìm kiếm và lọc -->
-                <form method="get" th:action="@{/librarian/fines}" class="row g-2 mb-4">
-                    <div class="col-12 col-md-6 col-lg-5">
-                        <div class="input-group">
-                            <span class="input-group-text bg-white border-end-0 text-muted">
-                                <i class="bi bi-search"></i>
-                            </span>
-                            <input type="text" name="keyword" class="form-control border-start-0"
-                                   placeholder="Tìm theo tên độc giả, email, tên sách, mã phạt..."
-                                   th:value="${keyword}">
-                        </div>
-                    </div>
-
-                    <div class="col-12 col-md-4 col-lg-3">
-                        <select name="status" class="form-select" onchange="this.form.submit()">
-                            <option value="">-- Tất cả trạng thái --</option>
-                            <option th:each="st : ${statuses}"
-                                    th:value="${st}"
-                                    th:text="${st.label}"
-                                    th:selected="${selectedStatus == st}"></option>
-                        </select>
-                    </div>
-
-                    <div class="col-12 col-md-2 col-lg-4 d-flex gap-2">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="bi bi-filter me-1"></i> Lọc
-                        </button>
-                        <a th:if="${not #strings.isEmpty(keyword) or selectedStatus != null}"
-                           th:href="@{/librarian/fines}" class="btn btn-outline-secondary" title="Đặt lại bộ lọc">
-                            <i class="bi bi-x-lg"></i>
-                        </a>
-                    </div>
-                </form>
-
-                <!-- Bảng danh sách phạt -->
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead class="table-light">
-                        <tr>
-                            <th scope="col" style="width: 70px;">Mã</th>
-                            <th scope="col">Độc giả</th>
-                            <th scope="col">Lý do / Đầu sách</th>
-                            <th scope="col" class="text-center">Số ngày trễ</th>
-                            <th scope="col" class="text-end">Số tiền phạt</th>
-                            <th scope="col" class="text-center">Trạng thái</th>
-                            <th scope="col">Thời gian</th>
-                            <th scope="col" class="text-end" style="width: 140px;">Thao tác</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr th:if="${#lists.isEmpty(fines)}">
-                            <td colspan="8" class="text-center py-5 text-muted">
-                                <i class="bi bi-inbox fs-1 d-block mb-2 text-secondary opacity-50"></i>
-                                Không tìm thấy khoản phạt nào phù hợp.
-                            </td>
-                        </tr>
-
-                        <tr th:each="fine : ${fines}">
-                            <!-- Mã phạt -->
-                            <td>
-                                <span class="fw-bold text-secondary" th:text="'#' + ${fine.id}">#1</span>
-                            </td>
-
-                            <!-- Thông tin độc giả -->
-                            <td>
-                                <div class="fw-semibold" th:text="${fine.reader.fullName}">Nguyễn Văn A</div>
-                                <div class="small text-muted" th:text="${fine.reader.email}">reader@library.local</div>
-                            </td>
-
-                            <!-- Lý do / Sách liên quan -->
-                            <td>
+            <main class="dashboard-content">
+                <!-- Thẻ tóm tắt chỉ số KPI nhanh (Chia đều 2 cột 50% - 50%) -->
+                <div class="row g-3 mb-4">
+                    <div class="col-12 col-md-6">
+                        <div class="card border-0 shadow-sm p-3 px-4 bg-white h-100">
+                            <div class="d-flex align-items-center">
+                                <div class="rounded-3 p-3 bg-danger-subtle text-danger me-3 fs-2">
+                                    <i class="bi bi-exclamation-octagon"></i>
+                                </div>
                                 <div>
-                                    <span class="badge bg-light text-dark border me-1" th:text="${fine.fineType.label}">Trả trễ hạn</span>
-                                    <span th:if="${fine.loan != null and fine.loan.book != null}"
-                                          class="fw-medium text-dark"
-                                          th:text="${fine.loan.book.title}">Tên cuốn sách</span>
+                                    <div class="text-muted small fw-medium text-uppercase">Chưa thanh toán</div>
+                                    <h3 class="h4 mb-0 text-danger fw-bold"
+                                        th:text="${#numbers.formatDecimal(summary.totalUnpaidAmount, 0, 'COMMA', 0, 'POINT')} + ' đ'">
+                                        0 đ</h3>
+                                    <div class="small text-muted"
+                                        th:text="${summary.unpaidCount} + ' khoản phạt chưa thu'">0 khoản</div>
                                 </div>
-                                <div th:if="${fine.note != null}" class="small text-muted" th:text="${fine.note}">Ghi chú</div>
-                                <div th:if="${fine.loan != null}" class="small text-muted">
-                                    Mã phiếu mượn: <span class="fw-semibold" th:text="'#' + ${fine.loan.id}">#10</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <div class="card border-0 shadow-sm p-3 px-4 bg-white h-100">
+                            <div class="d-flex align-items-center">
+                                <div class="rounded-3 p-3 bg-success-subtle text-success me-3 fs-2">
+                                    <i class="bi bi-check2-circle"></i>
                                 </div>
-                            </td>
+                                <div>
+                                    <div class="text-muted small fw-medium text-uppercase">Tổng tiền đã thu</div>
+                                    <h3 class="h4 mb-0 text-success fw-bold"
+                                        th:text="${#numbers.formatDecimal(summary.totalPaidAmount, 0, 'COMMA', 0, 'POINT')} + ' đ'">
+                                        0 đ</h3>
+                                    <div class="small text-muted"
+                                        th:text="${summary.paidCount} + ' khoản đã thanh toán'">0 khoản</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-                            <!-- Số ngày trễ -->
-                            <td class="text-center">
-                                <span th:if="${fine.overdueDays != null and fine.overdueDays > 0}"
-                                      class="badge bg-danger-subtle text-danger fw-semibold"
-                                      th:text="${fine.overdueDays} + ' ngày'">3 ngày</span>
-                                <span th:unless="${fine.overdueDays != null and fine.overdueDays > 0}"
-                                      class="text-muted small">-</span>
-                            </td>
+                <!-- Panel chính: Bộ lọc & Bảng danh sách phạt -->
+                <div class="panel border-0 shadow-sm p-4">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+                        <div>
+                            <h1 class="h4 mb-1">Danh sách khoản phạt</h1>
+                            <p class="text-muted small mb-0">Tra cứu các khoản phạt quá hạn và thu tiền phạt trực tiếp
+                                tại quầy thư viện.</p>
+                        </div>
+                    </div>
 
-                            <!-- Số tiền phạt -->
-                            <td class="text-end">
-                                <span class="fw-bold fs-6 text-danger"
-                                      th:text="${#numbers.formatDecimal(fine.amount, 0, 'COMMA', 0, 'POINT')} + ' đ'">10,000 đ</span>
-                            </td>
+                    <!-- Thông báo flash message -->
+                    <div th:replace="~{fragments/layout :: alerts}"></div>
 
-                            <!-- Trạng thái -->
-                            <td class="text-center">
-                                <span th:if="${fine.status.name() == 'UNPAID'}"
-                                      class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1">
-                                    <i class="bi bi-clock me-1"></i> Chưa thanh toán
+                    <!-- Form tìm kiếm và lọc -->
+                    <form method="get" th:action="@{/librarian/fines}" class="row g-2 mb-4">
+                        <div class="col-12 col-md-6 col-lg-5">
+                            <div class="input-group">
+                                <span class="input-group-text bg-white border-end-0 text-muted">
+                                    <i class="bi bi-search"></i>
                                 </span>
-                                <span th:if="${fine.status.name() == 'PAID'}"
-                                      class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1">
-                                    <i class="bi bi-check2 me-1"></i> Đã thu phạt
-                                </span>
-                                <span th:if="${fine.status.name() == 'WAIVED'}"
-                                      class="badge bg-secondary-subtle text-secondary border border-secondary-subtle px-2 py-1">
-                                    Được miễn
-                                </span>
-                            </td>
+                                <input type="text" name="keyword" class="form-control border-start-0"
+                                    placeholder="Tìm theo tên độc giả, email, tên sách, mã phạt..."
+                                    th:value="${keyword}">
+                            </div>
+                        </div>
 
-                            <!-- Thời gian -->
-                            <td>
-                                <div class="small">
-                                    <span class="text-muted">Tạo:</span>
-                                    <span th:text="${#temporals.format(fine.createdAt, 'dd/MM/yyyy HH:mm')}">01/01/2026</span>
-                                </div>
-                                <div th:if="${fine.paidAt != null}" class="small text-success">
-                                    <span>Thu:</span>
-                                    <span th:text="${#temporals.format(fine.paidAt, 'dd/MM/yyyy HH:mm')}">01/01/2026</span>
-                                </div>
-                            </td>
+                        <div class="col-12 col-md-4 col-lg-3">
+                            <select name="status" class="form-select" onchange="this.form.submit()">
+                                <option value="">-- Tất cả trạng thái --</option>
+                                <option th:each="st : ${statuses}" th:value="${st}" th:text="${st.label}"
+                                    th:selected="${selectedStatus == st}"></option>
+                            </select>
+                        </div>
 
-                            <!-- Thao tác -->
-                            <td class="text-end">
-                                <th:block th:if="${fine.status.name() == 'UNPAID'}">
-                                    <!-- Nút mở modal xác nhận thu phạt -->
-                                    <button type="button" class="btn btn-sm btn-success"
-                                            data-bs-toggle="modal"
-                                            th:data-bs-target="'#payModal-' + ${fine.id}">
-                                        <i class="bi bi-cash me-1"></i> Thu phạt
-                                    </button>
+                        <div class="col-12 col-md-2 col-lg-4 d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-filter me-1"></i> Lọc
+                            </button>
+                            <a th:if="${not #strings.isEmpty(keyword) or selectedStatus != null}"
+                                th:href="@{/librarian/fines}" class="btn btn-outline-secondary" title="Đặt lại bộ lọc">
+                                <i class="bi bi-x-lg"></i>
+                            </a>
+                        </div>
+                    </form>
 
-                                    <!-- Modal xác nhận thu tiền mặt -->
-                                    <div class="modal fade text-start" th:id="'payModal-' + ${fine.id}" tabindex="-1" aria-hidden="true">
-                                        <div class="modal-dialog modal-dialog-centered">
-                                            <div class="modal-content">
-                                                <form method="post" th:action="@{/librarian/fines/{id}/pay(id=${fine.id})}">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title h6">
-                                                            <i class="bi bi-cash-coin text-success me-2"></i> Xác nhận thu tiền phạt
-                                                        </h5>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        <p class="mb-3">Xác nhận đã nhận tiền mặt từ độc giả tại quầy:</p>
-                                                        <div class="bg-light p-3 rounded-3 mb-3">
-                                                            <div class="d-flex justify-content-between mb-1">
-                                                                <span class="text-muted">Độc giả:</span>
-                                                                <span class="fw-semibold" th:text="${fine.reader.fullName}">Tên độc giả</span>
-                                                            </div>
-                                                            <div class="d-flex justify-content-between mb-1">
-                                                                <span class="text-muted">Email:</span>
-                                                                <span th:text="${fine.reader.email}">email@example.com</span>
-                                                            </div>
-                                                            <div th:if="${fine.loan != null and fine.loan.book != null}"
-                                                                 class="d-flex justify-content-between mb-1">
-                                                                <span class="text-muted">Sách quá hạn:</span>
-                                                                <span class="text-truncate ms-2" style="max-width: 250px;"
-                                                                      th:text="${fine.loan.book.title}">Tên sách</span>
-                                                            </div>
-                                                            <div th:if="${fine.overdueDays != null}"
-                                                                 class="d-flex justify-content-between mb-1">
-                                                                <span class="text-muted">Số ngày trễ:</span>
-                                                                <span class="text-danger fw-semibold" th:text="${fine.overdueDays} + ' ngày'">3 ngày</span>
-                                                            </div>
-                                                            <hr class="my-2">
-                                                            <div class="d-flex justify-content-between align-items-center">
-                                                                <span class="fw-bold">Số tiền cần thu:</span>
-                                                                <span class="fs-5 fw-bold text-danger"
-                                                                      th:text="${#numbers.formatDecimal(fine.amount, 0, 'COMMA', 0, 'POINT')} + ' đ'">10,000 đ</span>
-                                                            </div>
-                                                        </div>
-                                                        <div class="small text-muted">
-                                                            <i class="bi bi-info-circle me-1"></i> Sau khi thu tiền, hệ thống sẽ tự động gạch nợ và mở khóa quyền mượn sách cho độc giả nếu không còn khoản phạt nào khác.
-                                                        </div>
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Hủy bỏ</button>
-                                                        <button type="submit" class="btn btn-success">
-                                                            <i class="bi bi-check-lg me-1"></i> Đã thu tiền mặt
-                                                        </button>
-                                                    </div>
-                                                </form>
-                                            </div>
+                    <!-- Bảng danh sách phạt -->
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th scope="col" style="width: 70px;">Mã</th>
+                                    <th scope="col">Độc giả</th>
+                                    <th scope="col">Lý do / Đầu sách</th>
+                                    <th scope="col" class="text-center">Số ngày trễ</th>
+                                    <th scope="col" class="text-end">Số tiền phạt</th>
+                                    <th scope="col" class="text-center">Trạng thái</th>
+                                    <th scope="col">Thời gian</th>
+                                    <th scope="col" class="text-end" style="width: 140px;">Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:if="${#lists.isEmpty(fines)}">
+                                    <td colspan="8" class="text-center py-5 text-muted">
+                                        <i class="bi bi-inbox fs-1 d-block mb-2 text-secondary opacity-50"></i>
+                                        Không tìm thấy khoản phạt nào phù hợp.
+                                    </td>
+                                </tr>
+
+                                <tr th:each="fine : ${fines}">
+                                    <!-- Mã phạt -->
+                                    <td>
+                                        <span class="fw-bold text-secondary" th:text="'#' + ${fine.id}">#1</span>
+                                    </td>
+
+                                    <!-- Thông tin độc giả -->
+                                    <td>
+                                        <div class="fw-semibold" th:text="${fine.reader.fullName}">Nguyễn Văn A</div>
+                                        <div class="small text-muted" th:text="${fine.reader.email}">
+                                            reader@library.local</div>
+                                    </td>
+
+                                    <!-- Lý do / Sách liên quan -->
+                                    <td>
+                                        <div>
+                                            <span class="badge bg-light text-dark border me-1"
+                                                th:text="${fine.fineType.label}">Trả trễ hạn</span>
+                                            <span th:if="${fine.loan != null and fine.loan.book != null}"
+                                                class="fw-medium text-dark" th:text="${fine.loan.book.title}">Tên cuốn
+                                                sách</span>
                                         </div>
-                                    </div>
-                                </th:block>
+                                        <div th:if="${fine.description != null}" class="small text-muted"
+                                            th:text="${fine.description}">Ghi chú</div>
+                                        <div th:if="${fine.loan != null}" class="small text-muted">
+                                            Mã phiếu mượn: <span class="fw-semibold"
+                                                th:text="'#' + ${fine.loan.id}">#10</span>
+                                        </div>
+                                    </td>
 
-                                <span th:if="${fine.status.name() == 'PAID'}" class="text-muted small">
-                                    <i class="bi bi-check-circle-fill text-success me-1"></i> Đã thu
-                                </span>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
+                                    <!-- Số ngày trễ -->
+                                    <td class="text-center">
+                                        <span th:if="${fine.overdueDays != null and fine.overdueDays > 0}"
+                                            class="badge bg-danger-subtle text-danger fw-semibold"
+                                            th:text="${fine.overdueDays} + ' ngày'">3 ngày</span>
+                                        <span th:unless="${fine.overdueDays != null and fine.overdueDays > 0}"
+                                            class="text-muted small">-</span>
+                                    </td>
 
-                <!-- Phân trang -->
-                <div class="mt-4" th:if="${result.totalPages > 1}">
-                    <nav th:replace="~{fragments/layout :: pagination(${result}, @{/librarian/fines(keyword=${keyword}, status=${selectedStatus})})}"></nav>
+                                    <!-- Số tiền phạt -->
+                                    <td class="text-end">
+                                        <span class="fw-bold fs-6 text-danger"
+                                            th:text="${#numbers.formatDecimal(fine.amount, 0, 'COMMA', 0, 'POINT')} + ' đ'">10,000
+                                            đ</span>
+                                    </td>
+
+                                    <!-- Trạng thái -->
+                                    <td class="text-center">
+                                        <span th:if="${fine.status.name() == 'UNPAID'}"
+                                            class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1">
+                                            <i class="bi bi-clock me-1"></i> Chưa thanh toán
+                                        </span>
+                                        <span th:if="${fine.status.name() == 'PAID'}"
+                                            class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1">
+                                            <i class="bi bi-check2 me-1"></i> Đã thu phạt
+                                        </span>
+                                        <span th:if="${fine.status.name() == 'WAIVED'}"
+                                            class="badge bg-secondary-subtle text-secondary border border-secondary-subtle px-2 py-1">
+                                            Được miễn
+                                        </span>
+                                    </td>
+
+                                    <!-- Thời gian -->
+                                    <td>
+                                        <div class="small">
+                                            <span class="text-muted">Tạo:</span>
+                                            <span
+                                                th:text="${#temporals.format(fine.createdAt, 'dd/MM/yyyy HH:mm')}">01/01/2026</span>
+                                        </div>
+                                        <div th:if="${fine.paidAt != null}" class="small text-success">
+                                            <span>Thu:</span>
+                                            <span
+                                                th:text="${#temporals.format(fine.paidAt, 'dd/MM/yyyy HH:mm')}">01/01/2026</span>
+                                        </div>
+                                    </td>
+
+                                    <!-- Thao tác -->
+                                    <td class="text-end">
+                                        <th:block th:if="${fine.status.name() == 'UNPAID'}">
+                                            <!-- Nút mở modal xác nhận thu phạt -->
+                                            <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal"
+                                                th:data-bs-target="'#payModal-' + ${fine.id}">
+                                                <i class="bi bi-cash me-1"></i> Thu phạt
+                                            </button>
+
+                                            <!-- Modal xác nhận thu tiền mặt -->
+                                            <div class="modal fade text-start" th:id="'payModal-' + ${fine.id}"
+                                                tabindex="-1" aria-hidden="true">
+                                                <div class="modal-dialog modal-dialog-centered">
+                                                    <div class="modal-content">
+                                                        <form method="post"
+                                                            th:action="@{/librarian/fines/{id}/pay(id=${fine.id})}">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title h6">
+                                                                    <i class="bi bi-cash-coin text-success me-2"></i>
+                                                                    Xác nhận thu tiền phạt
+                                                                </h5>
+                                                                <button type="button" class="btn-close"
+                                                                    data-bs-dismiss="modal" aria-label="Đóng"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <p class="mb-3">Xác nhận đã nhận tiền mặt từ độc giả tại
+                                                                    quầy:</p>
+                                                                <div class="bg-light p-3 rounded-3 mb-3">
+                                                                    <div class="d-flex justify-content-between mb-1">
+                                                                        <span class="text-muted">Độc giả:</span>
+                                                                        <span class="fw-semibold"
+                                                                            th:text="${fine.reader.fullName}">Tên độc
+                                                                            giả</span>
+                                                                    </div>
+                                                                    <div class="d-flex justify-content-between mb-1">
+                                                                        <span class="text-muted">Email:</span>
+                                                                        <span
+                                                                            th:text="${fine.reader.email}">email@example.com</span>
+                                                                    </div>
+                                                                    <div th:if="${fine.loan != null and fine.loan.book != null}"
+                                                                        class="d-flex justify-content-between mb-1">
+                                                                        <span class="text-muted">Sách quá hạn:</span>
+                                                                        <span class="text-truncate ms-2"
+                                                                            style="max-width: 250px;"
+                                                                            th:text="${fine.loan.book.title}">Tên
+                                                                            sách</span>
+                                                                    </div>
+                                                                    <div th:if="${fine.overdueDays != null}"
+                                                                        class="d-flex justify-content-between mb-1">
+                                                                        <span class="text-muted">Số ngày trễ:</span>
+                                                                        <span class="text-danger fw-semibold"
+                                                                            th:text="${fine.overdueDays} + ' ngày'">3
+                                                                            ngày</span>
+                                                                    </div>
+                                                                    <hr class="my-2">
+                                                                    <div
+                                                                        class="d-flex justify-content-between align-items-center">
+                                                                        <span class="fw-bold">Số tiền cần thu:</span>
+                                                                        <span class="fs-5 fw-bold text-danger"
+                                                                            th:text="${#numbers.formatDecimal(fine.amount, 0, 'COMMA', 0, 'POINT')} + ' đ'">10,000
+                                                                            đ</span>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="small text-muted">
+                                                                    <i class="bi bi-info-circle me-1"></i> Sau khi thu
+                                                                    tiền, hệ thống sẽ tự động gạch nợ và mở khóa quyền
+                                                                    mượn sách cho độc giả nếu không còn khoản phạt nào
+                                                                    khác.
+                                                                </div>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-outline-secondary"
+                                                                    data-bs-dismiss="modal">Hủy bỏ</button>
+                                                                <button type="submit" class="btn btn-success">
+                                                                    <i class="bi bi-check-lg me-1"></i> Đã thu tiền
+                                                                </button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </th:block>
+
+                                        <span th:if="${fine.status.name() == 'PAID'}" class="text-muted small">
+                                            <i class="bi bi-check-circle-fill text-success me-1"></i> Đã thu
+                                        </span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Phân trang -->
+                    <div class="mt-4" th:if="${result.totalPages > 1}">
+                        <nav
+                            th:replace="~{fragments/layout :: pagination(${result}, @{/librarian/fines(keyword=${keyword}, status=${selectedStatus})})}">
+                        </nav>
+                    </div>
                 </div>
-            </div>
-        </main>
+            </main>
+        </div>
     </div>
-</div>
 
 </body>
-</html>
 
+</html>

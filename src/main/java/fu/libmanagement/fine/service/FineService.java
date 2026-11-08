@@ -104,7 +104,6 @@ public class FineService {
         payment.setStatus(PaymentStatus.SUCCESS);
         payment.setTransactionCode("PAY-" + System.currentTimeMillis() + "-" + fine.getId());
         payment.setReceivedBy(staff);
-        payment.setCreatedAt(now);
         payment.setPaidAt(now);
         paymentRepository.save(payment);
     }

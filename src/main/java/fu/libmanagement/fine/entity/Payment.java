@@ -43,22 +43,19 @@ public class Payment {
     private BigDecimal amount;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "payment_method", nullable = false, length = 10)
+    @Column(name = "method", nullable = false, length = 10)
     private PaymentMethod method = PaymentMethod.COUNTER;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 10)
     private PaymentStatus status = PaymentStatus.SUCCESS;
 
-    @Column(name = "transaction_ref", length = 100)
+    @Column(name = "transaction_code", length = 64)
     private String transactionCode;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "received_by")
     private User receivedBy;
-
-    @Column(name = "created_at", nullable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
 
     @Column(name = "paid_at", nullable = false)
     private LocalDateTime paidAt = LocalDateTime.now();

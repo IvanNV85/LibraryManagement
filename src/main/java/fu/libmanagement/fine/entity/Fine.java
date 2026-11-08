@@ -55,15 +55,15 @@ public class Fine {
     @Column(name = "amount", nullable = false, precision = 12, scale = 2)
     private BigDecimal amount;
 
-    @Column(name = "note", length = 255)
-    private String note;
+    @Column(name = "description", length = 255)
+    private String description;
 
-    public String getDescription() {
-        return note;
+    public String getNote() {
+        return description;
     }
 
-    public void setDescription(String description) {
-        this.note = description;
+    public void setNote(String note) {
+        this.description = note;
     }
 
     @Enumerated(EnumType.STRING)

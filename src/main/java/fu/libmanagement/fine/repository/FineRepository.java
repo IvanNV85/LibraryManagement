@@ -26,7 +26,7 @@ public interface FineRepository extends JpaRepository<Fine, Long> {
                 OR LOWER(r.fullName) LIKE :keyword
                 OR LOWER(r.email) LIKE :keyword
                 OR LOWER(b.title) LIKE :keyword
-                OR (f.note IS NOT NULL AND LOWER(f.note) LIKE :keyword)
+                OR (f.description IS NOT NULL AND LOWER(f.description) LIKE :keyword)
                 OR CAST(f.id AS string) LIKE :keyword
                 OR (l IS NOT NULL AND CAST(l.id AS string) LIKE :keyword)
               )
@@ -42,7 +42,7 @@ public interface FineRepository extends JpaRepository<Fine, Long> {
                 OR LOWER(r.fullName) LIKE :keyword
                 OR LOWER(r.email) LIKE :keyword
                 OR LOWER(b.title) LIKE :keyword
-                OR (f.note IS NOT NULL AND LOWER(f.note) LIKE :keyword)
+                OR (f.description IS NOT NULL AND LOWER(f.description) LIKE :keyword)
                 OR CAST(f.id AS string) LIKE :keyword
                 OR (l IS NOT NULL AND CAST(l.id AS string) LIKE :keyword)
               )
