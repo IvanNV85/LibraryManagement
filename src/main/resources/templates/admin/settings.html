@@ -1,9 +1,13 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/layout :: head('Cấu hình quy định')}"></head>
+<head th:replace="~{fragments/layout-librarian :: head('Cấu hình quy định')}"></head>
 <body>
-<div th:replace="~{fragments/layout :: navbar}"></div>
-<div class="container my-4" style="max-width: 720px"><div class="panel page-spacer">
+<div class="dashboard-layout">
+    <aside th:replace="~{fragments/layout-librarian :: sidebar('admin-settings')}"></aside>
+    <div class="dashboard-main">
+        <header th:replace="~{fragments/layout-librarian :: topbar('Cấu hình quy định')}"></header>
+        <main class="dashboard-content">
+<div class="w-100" style="max-width: 720px"><div class="panel border-0 shadow-sm p-4">
     <h3>Cấu hình quy định</h3><hr>
     <div th:replace="~{fragments/layout :: alerts}"></div>
     <form th:action="@{/admin/settings}" method="post">
@@ -16,5 +20,7 @@
         <button class="btn btn-primary" type="submit">Lưu quy định</button>
     </form>
 </div></div>
-<div th:replace="~{fragments/layout :: footer}"></div>
+        </main>
+    </div>
+</div>
 </body></html>

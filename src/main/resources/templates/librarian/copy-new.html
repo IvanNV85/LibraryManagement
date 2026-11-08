@@ -1,10 +1,14 @@
 ﻿<!doctype html>
 <html xmlns:th="http://www.thymeleaf.org">
-  <head th:replace="~{fragments/layout :: head('Thêm bản sao')}"></head>
+  <head th:replace="~{fragments/layout-librarian :: head('Thêm bản sao')}"></head>
   <body>
-    <div th:replace="~{fragments/layout :: navbar}"></div>
-    <div class="container my-4">
-      <div class="panel page-spacer">
+    <div class="dashboard-layout">
+    <aside th:replace="~{fragments/layout-librarian :: sidebar('copies')}"></aside>
+    <div class="dashboard-main">
+        <header th:replace="~{fragments/layout-librarian :: topbar('Thêm bản sao')}"></header>
+        <main class="dashboard-content">
+    <div class="w-100">
+      <div class="panel border-0 shadow-sm p-4">
         <h3>THÊM BẢN SAO SÁCH</h3>
         <hr />
         <div th:replace="~{fragments/layout :: alerts}"></div>
@@ -72,6 +76,8 @@
         </form>
       </div>
     </div>
-    <div th:replace="~{fragments/layout :: footer}"></div>
+            </main>
+    </div>
+</div>
   </body>
 </html>

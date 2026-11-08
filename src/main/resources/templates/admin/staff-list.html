@@ -1,7 +1,11 @@
 <!DOCTYPE html><html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/layout :: head('Quản lý nhân viên')}"></head><body>
-<div th:replace="~{fragments/layout :: navbar}"></div>
-<div class="container my-4"><div class="panel page-spacer">
+<head th:replace="~{fragments/layout-librarian :: head('Quản lý nhân viên')}"></head><body>
+<div class="dashboard-layout">
+    <aside th:replace="~{fragments/layout-librarian :: sidebar('admin-staff')}"></aside>
+    <div class="dashboard-main">
+        <header th:replace="~{fragments/layout-librarian :: topbar('Quản lý nhân viên')}"></header>
+        <main class="dashboard-content">
+<div class="w-100"><div class="panel border-0 shadow-sm p-4">
     <h3>Quản lý nhân viên</h3><hr><div th:replace="~{fragments/layout :: alerts}"></div>
     <form class="row g-3 align-items-center" th:action="@{/admin/staff}" method="get">
         <div class="col-md-6"><input class="form-control" name="keyword" th:value="${keyword}" placeholder="Tìm họ tên hoặc email"></div>
@@ -9,9 +13,12 @@
         <div class="col-auto"><a class="btn btn-success" th:href="@{/admin/staff/new}">Thêm thủ thư</a></div>
     </form>
     <h4 class="mt-4">Danh sách nhân viên (<span th:text="${result.totalElements}">0</span>)</h4>
-    <div class="table-responsive"><table class="table table-bordered"><thead><tr><th>Họ tên</th><th>Email</th><th>Điện thoại</th><th>Trạng thái</th><th>Thao tác</th></tr></thead>
+    <div class="table-responsive"><table class="table table-hover align-middle"><thead class="table-light"><tr><th>Họ tên</th><th>Email</th><th>Điện thoại</th><th>Trạng thái</th><th>Thao tác</th></tr></thead>
     <tbody><tr th:each="s : ${result.content}"><td th:text="${s.fullName}"></td><td th:text="${s.email}"></td><td th:text="${s.phone}"></td><td th:text="${s.status.label}"></td>
         <td><a class="btn btn-primary btn-sm" th:href="@{/admin/staff/{id}(id=${s.id})}">Chi tiết</a></td></tr>
     <tr th:if="${result.empty}"><td colspan="5">Không tìm thấy nhân viên.</td></tr></tbody></table></div>
     <nav th:replace="~{fragments/layout :: pagination(${result}, @{/admin/staff(keyword=${keyword})})}"></nav>
-</div></div><div th:replace="~{fragments/layout :: footer}"></div></body></html>
+</div></div>
+        </main>
+    </div>
+</div></body></html>

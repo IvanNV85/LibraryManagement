@@ -1,10 +1,14 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/layout :: head('Báo cáo thống kê')}"></head>
+<head th:replace="~{fragments/layout-librarian :: head('Báo cáo thống kê')}"></head>
 <body>
-<div th:replace="~{fragments/layout :: navbar}"></div>
-<main class="container my-4">
-    <div class="panel page-spacer">
+<div class="dashboard-layout">
+    <aside th:replace="~{fragments/layout-librarian :: sidebar('admin-reports')}"></aside>
+    <div class="dashboard-main">
+        <header th:replace="~{fragments/layout-librarian :: topbar('Báo cáo thống kê')}"></header>
+        <main class="dashboard-content">
+<div class="w-100">
+    <div class="panel border-0 shadow-sm p-4">
         <h3>BÁO CÁO THỐNG KÊ</h3>
         <hr>
         <div class="row g-3 mt-2">
@@ -19,7 +23,9 @@
             </div></div></div>
         </div>
     </div>
-</main>
-<div th:replace="~{fragments/layout :: footer}"></div>
+</div>
+        </main>
+    </div>
+</div>
 </body>
 </html>

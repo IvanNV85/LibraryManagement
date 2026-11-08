@@ -1,9 +1,13 @@
 ﻿<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/layout :: head('Chi tiết bản sao')}"></head>
+<head th:replace="~{fragments/layout-librarian :: head('Chi tiết bản sao')}"></head>
 <body>
-<div th:replace="~{fragments/layout :: navbar}"></div>
-<div class="container my-4"><div class="panel page-spacer">
+<div class="dashboard-layout">
+    <aside th:replace="~{fragments/layout-librarian :: sidebar('copies')}"></aside>
+    <div class="dashboard-main">
+        <header th:replace="~{fragments/layout-librarian :: topbar('Chi tiết bản sao')}"></header>
+        <main class="dashboard-content">
+<div class="w-100"><div class="panel border-0 shadow-sm p-4">
     <h3>CHI TIẾT BẢN SAO</h3><hr>
     <div th:replace="~{fragments/layout :: alerts}"></div>
     <dl class="row">
@@ -34,5 +38,7 @@
     </div>
     <a class="btn btn-secondary mt-4" th:href="@{/librarian/copies}">Quay lại danh sách</a>
 </div></div>
-<div th:replace="~{fragments/layout :: footer}"></div>
+        </main>
+    </div>
+</div>
 </body></html>

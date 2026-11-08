@@ -1,7 +1,11 @@
 <!DOCTYPE html><html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/layout :: head('Thông tin nhân viên')}"></head><body>
-<div th:replace="~{fragments/layout :: navbar}"></div>
-<div class="container my-4" style="max-width:720px"><div class="panel page-spacer">
+<head th:replace="~{fragments/layout-librarian :: head('Thông tin nhân viên')}"></head><body>
+<div class="dashboard-layout">
+    <aside th:replace="~{fragments/layout-librarian :: sidebar('admin-staff')}"></aside>
+    <div class="dashboard-main">
+        <header th:replace="~{fragments/layout-librarian :: topbar('Thông tin nhân viên')}"></header>
+        <main class="dashboard-content">
+<div class="w-100" style="max-width:720px"><div class="panel border-0 shadow-sm p-4">
     <h3 th:text="${creating} ? 'Thêm thủ thư' : 'Cập nhật nhân viên'">Nhân viên</h3><hr>
     <div th:replace="~{fragments/layout :: alerts}"></div>
     <form th:action="${creating} ? @{/admin/staff} : @{/admin/staff/{id}(id=${staffId})}" th:object="${form}" method="post">
@@ -13,4 +17,7 @@
         <div class="mb-3"><label class="form-label" for="confirmPassword">Nhập lại mật khẩu</label><input class="form-control" type="password" id="confirmPassword" th:field="*{confirmPassword}" minlength="6" required></div></th:block>
         <button class="btn btn-primary">Lưu</button> <a class="btn btn-outline-secondary" th:href="@{/admin/staff}">Hủy</a>
     </form>
-</div></div><div th:replace="~{fragments/layout :: footer}"></div></body></html>
+</div></div>
+        </main>
+    </div>
+</div></body></html>
