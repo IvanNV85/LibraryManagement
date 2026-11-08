@@ -2,19 +2,25 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
 <!--
-  MENU RIÊNG CỦA ADMIN (chỉ hiện khi role ADMIN, hiện thêm sau menu thủ thư).
+  MENU RIÊNG CỦA ADMIN (chỉ hiển thị khi role ADMIN).
   Thêm chức năng mới: copy một thẻ <a class="account-item"> bên dưới. Đường dẫn bắt đầu bằng /admin/.
   Gợi ý: UC23 quản lý nhân viên, UC24 cấu hình quy định, UC25 báo cáo thống kê.
 -->
 <th:block th:fragment="items">
+    <a class="account-item" th:href="@{/admin/dashboard}">
+        <span class="icon-circle"><i class="bi bi-speedometer2"></i></span>Dashboard
+    </a>
+    <a class="account-item" th:href="@{/admin/readers}">
+        <span class="icon-circle"><i class="bi bi-person-badge"></i></span>Quản lý độc giả
+    </a>
     <a class="account-item" th:href="@{/admin/staff}">
         <span class="icon-circle"><i class="bi bi-person-badge"></i></span>Quản lý nhân viên
     </a>
     <a class="account-item" th:href="@{/admin/settings}">
         <span class="icon-circle"><i class="bi bi-gear"></i></span>Cấu hình quy định
     </a>
-    <a class="account-item" th:href="@{/admin/reports}">
-        <span class="icon-circle"><i class="bi bi-bar-chart"></i></span>Báo cáo thống kê
+    <a class="account-item" th:href="@{/admin/purchase-orders}">
+        <span class="icon-circle"><i class="bi bi-box-seam"></i></span>Duyệt phiếu nhập
     </a>
 </th:block>
 </body>

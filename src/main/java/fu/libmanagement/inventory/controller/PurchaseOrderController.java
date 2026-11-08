@@ -25,8 +25,11 @@ import java.util.List;
 public class PurchaseOrderController {
     private final PurchaseOrderService service;
 
-    @GetMapping("/librarian/purchase-orders")
-    public String list(Model model) {
+    @GetMapping({"/librarian/purchase-orders", "/admin/purchase-orders"})
+    public String list(Model model, HttpServletRequest request) {
+        if (SessionUser.get(request).isAdmin() && request.getRequestURI().substring(request.getContextPath().length()).startsWith("/librarian/")) {
+            return "redirect:/admin/purchase-orders";
+        }
         model.addAttribute("orders", service.list());
         return "inventory/order-list";
     }
@@ -60,8 +63,11 @@ public class PurchaseOrderController {
         }
     }
 
-    @GetMapping("/librarian/purchase-orders/{id}")
-    public String detail(@PathVariable long id, Model model) {
+    @GetMapping({"/librarian/purchase-orders/{id}", "/admin/purchase-orders/{id}"})
+    public String detail(@PathVariable long id, Model model, HttpServletRequest request) {
+        if (SessionUser.get(request).isAdmin() && request.getRequestURI().substring(request.getContextPath().length()).startsWith("/librarian/")) {
+            return "redirect:/admin/purchase-orders/" + id;
+        }
         model.addAttribute("order", service.order(id));
         model.addAttribute("items", service.items(id));
         return "inventory/order-detail";
@@ -73,7 +79,7 @@ public class PurchaseOrderController {
             service.approve(id, SessionUser.get(request).getId());
             redirect.addFlashAttribute("message", "Đã duyệt phiếu nhập");
         } catch (BusinessException e) { redirect.addFlashAttribute("error", e.getMessage()); }
-        return "redirect:/librarian/purchase-orders/" + id;
+        return "redirect:/admin/purchase-orders/" + id;
     }
 
     @PostMapping("/librarian/purchase-orders/{id}/receive")

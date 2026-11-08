@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/layout-librarian :: head('Báo cáo thống kê')}"></head>
+<head th:replace="~{fragments/layout-librarian :: head('Dashboard quản trị')}"></head>
 <body>
 <div class="dashboard-layout">
-    <aside th:replace="~{fragments/layout-librarian :: sidebar('admin-reports')}"></aside>
+    <aside th:replace="~{fragments/layout-librarian :: sidebar('dashboard')}"></aside>
     <div class="dashboard-main">
-        <header th:replace="~{fragments/layout-librarian :: topbar('Báo cáo thống kê')}"></header>
+        <header th:replace="~{fragments/layout-librarian :: topbar('Dashboard quản trị')}"></header>
         <main class="dashboard-content">
 <div class="w-100">
     <div class="panel border-0 shadow-sm p-4">
-        <h3>BÁO CÁO THỐNG KÊ</h3>
+        <h3>DASHBOARD QUẢN TRỊ</h3>
         <hr>
         <div class="row g-3 mt-2">
             <div class="col-md-4"><div class="card h-100"><div class="card-body">

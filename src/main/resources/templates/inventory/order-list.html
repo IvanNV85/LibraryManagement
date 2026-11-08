@@ -16,7 +16,7 @@
             <td th:text="${order.id}"></td><td th:text="${order.supplier}"></td><td th:text="${order.creator}"></td>
             <td th:text="${order.createdAt}"></td><td th:text="${order.status}"></td>
             <td th:text="${order.receivedAt == null ? 'Chưa nhận' : 'Đã nhận'}"></td>
-            <td><a th:href="@{/librarian/purchase-orders/{id}(id=${order.id})}">Chi tiết</a></td>
+            <td><a th:href="${currentUser.admin} ? @{/admin/purchase-orders/{id}(id=${order.id})} : @{/librarian/purchase-orders/{id}(id=${order.id})}">Chi tiết</a></td>
         </tr></tbody>
     </table></div>
 </div></div>
