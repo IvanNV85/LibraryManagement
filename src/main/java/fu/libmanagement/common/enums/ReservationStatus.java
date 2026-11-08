@@ -3,18 +3,19 @@ package fu.libmanagement.common.enums;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-/**
- * Trạng thái yêu cầu đặt trước khi sách đang hết (UC13).
- */
+import java.util.Set;
+
 @Getter
 @RequiredArgsConstructor
 public enum ReservationStatus {
-    WAITING("Chờ có sách"),
-    READY("Sách đã sẵn sàng"),
-    FULFILLED("Đã nhận sách"),
-    CANCELLED("Đã hủy"),
-    EXPIRED("Quá hạn nhận");
+    WAITING("Đang chờ sách", "bg-warning text-dark"),
+    READY("Sách đã sẵn sàng", "bg-info text-dark"),
+    FULFILLED("Đã mượn được", "bg-success"),
+    CANCELLED("Đã hủy", "bg-secondary"),
+    EXPIRED("Hết hạn giữ sách", "bg-secondary");
 
     private final String label;
-}
+    private final String badgeClass;
 
+    public static final Set<ReservationStatus> ACTIVE = Set.of(WAITING, READY);
+}

@@ -3,21 +3,20 @@ package fu.libmanagement.common.enums;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-/**
- * Loại thông báo trong web cho độc giả và người dùng (UC15).
- */
 @Getter
 @RequiredArgsConstructor
 public enum NotificationType {
-    DUE_SOON("Sắp đến hạn trả sách"),
-    OVERDUE("Sách quá hạn"),
-    LOAN_APPROVED("Yêu cầu mượn được duyệt"),
-    LOAN_REJECTED("Yêu cầu mượn bị từ chối"),
-    RESERVATION_READY("Sách đặt trước đã có"),
-    NEW_BOOK("Sách mới"),
-    FINE_CREATED("Phát sinh tiền phạt"),
-    SYSTEM("Thông báo hệ thống");
+    DUE_SOON("Sắp đến hạn trả", "bi-alarm", "/reader/loans"),
+    OVERDUE("Sách quá hạn", "bi-exclamation-triangle", "/reader/loans"),
+    LOAN_APPROVED("Yêu cầu mượn được duyệt", "bi-check-circle", "/reader/loans"),
+    LOAN_REJECTED("Yêu cầu mượn bị từ chối", "bi-x-circle", "/reader/loans"),
+    RESERVATION_READY("Sách đặt trước đã có", "bi-bookmark-check", "/reader/reservations"),
+    NEW_BOOK("Sách mới", "bi-journal-plus", "/books"),
+    FINE_CREATED("Khoản phạt mới", "bi-cash-coin", "/reader/loans"),
+    SYSTEM("Thông báo hệ thống", "bi-info-circle", "/reader/notifications");
 
     private final String label;
-}
 
+    private final String icon;
+    private final String path;
+}

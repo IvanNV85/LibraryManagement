@@ -3,22 +3,26 @@ package fu.libmanagement.common.enums;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-/**
- * Trạng thái yêu cầu mượn và phiếu mượn sách.
- * Đồng bộ chuẩn theo CHECK constraint của bảng loans trong Database:
- * PENDING, APPROVED, REJECTED, CANCELLED, EXPIRED, BORROWED, OVERDUE, RETURNED.
- */
+import java.util.Set;
+
 @Getter
 @RequiredArgsConstructor
 public enum LoanStatus {
-    PENDING("Chờ duyệt"),
-    APPROVED("Đã duyệt (Chờ nhận sách)"),
-    REJECTED("Bị từ chối"),
-    CANCELLED("Đã hủy"),
-    EXPIRED("Hết hạn nhận sách"),
-    BORROWED("Đang mượn"),
-    OVERDUE("Quá hạn trả"),
-    RETURNED("Đã trả");
+    PENDING("Chờ duyệt", "bg-warning text-dark", 1),
+    APPROVED("Đã duyệt, chờ nhận sách", "bg-info text-dark", 2),
+    REJECTED("Bị từ chối", "bg-danger", 0),
+    CANCELLED("Đã hủy", "bg-secondary", 0),
+    EXPIRED("Hết hạn nhận sách", "bg-secondary", 0),
+    BORROWED("Đang mượn", "bg-primary", 3),
+    OVERDUE("Quá hạn", "bg-danger", 3),
+    RETURNED("Đã trả", "bg-success", 4);
+
 
     private final String label;
+
+    private final String badgeClass;
+
+    private final int step;
+
+    public static final Set<LoanStatus> ACTIVE = Set.of(PENDING, APPROVED, BORROWED, OVERDUE);
 }
