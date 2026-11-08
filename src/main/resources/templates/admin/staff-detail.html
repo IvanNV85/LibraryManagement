@@ -1,0 +1,15 @@
+<!DOCTYPE html><html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Chi tiết nhân viên')}"></head><body>
+<div th:replace="~{fragments/layout :: navbar}"></div>
+<div class="container my-4" style="max-width:720px"><div class="panel page-spacer">
+    <h3>Chi tiết nhân viên</h3><hr><div th:replace="~{fragments/layout :: alerts}"></div>
+    <p><strong>Họ tên:</strong> <span th:text="${staff.fullName}"></span></p>
+    <p><strong>Email:</strong> <span th:text="${staff.email}"></span></p>
+    <p><strong>Điện thoại:</strong> <span th:text="${staff.phone ?: '-'}"></span></p>
+    <p><strong>Địa chỉ:</strong> <span th:text="${staff.address ?: '-'}"></span></p>
+    <p><strong>Trạng thái:</strong> <span th:text="${staff.status.label}"></span></p>
+    <a class="btn btn-primary" th:href="@{/admin/staff/{id}/edit(id=${staff.id})}">Cập nhật</a>
+    <form class="d-inline" th:if="${staff.status.name() == 'ACTIVE'}" th:action="@{/admin/staff/{id}/lock(id=${staff.id})}" method="post"><button class="btn btn-danger">Khóa</button></form>
+    <form class="d-inline" th:if="${staff.status.name() == 'LOCKED'}" th:action="@{/admin/staff/{id}/unlock(id=${staff.id})}" method="post"><button class="btn btn-secondary">Mở khóa</button></form>
+    <a class="btn btn-outline-secondary" th:href="@{/admin/staff}">Quay lại</a>
+</div></div><div th:replace="~{fragments/layout :: footer}"></div></body></html>

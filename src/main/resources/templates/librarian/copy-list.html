@@ -1,0 +1,31 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Quản lý bản sao sách')}"></head>
+<body>
+<div th:replace="~{fragments/layout :: navbar}"></div>
+<div class="container my-4"><div class="panel page-spacer">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <h3>QUẢN LÝ BẢN SAO SÁCH</h3>
+        <a class="btn btn-primary" th:href="@{/librarian/copies/new}">Thêm bản sao</a>
+    </div><hr>
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+    <form class="row g-3 align-items-center" method="get" th:action="@{/librarian/copies}">
+        <div class="col-md-6"><input class="form-control" name="keyword" th:value="${keyword}" maxlength="100" placeholder="Barcode, tên sách hoặc ISBN"></div>
+        <div class="col-md-3"><select class="form-select" name="status"><option value="ALL">Tất cả trạng thái</option>
+            <option th:each="s : ${statuses}" th:value="${s.name()}" th:text="${s.name()}" th:selected="${status == s.name()}"></option>
+        </select></div>
+        <div class="col-auto"><button class="btn btn-primary">Tìm kiếm</button></div>
+    </form>
+    <h4 class="mt-4">Danh sách bản sao (<span th:text="${result.totalElements}">0</span>)</h4>
+    <div class="table-responsive"><table class="table table-bordered">
+        <thead><tr><th>Barcode</th><th>Tên sách</th><th>ISBN</th><th>Vị trí kệ</th><th>Trạng thái</th><th>Thao tác</th></tr></thead>
+        <tbody><tr th:each="copy : ${result.content}">
+            <td th:text="${copy.barcode}"></td><td th:text="${copy.book.title}"></td><td th:text="${copy.book.isbn}"></td>
+            <td th:text="${copy.shelfLocation}"></td><td th:text="${copy.status}"></td>
+            <td><a class="btn btn-outline-primary btn-sm" th:href="@{/librarian/copies/{id}(id=${copy.id})}">Chi tiết</a></td>
+        </tr><tr th:if="${result.empty}"><td colspan="6" class="text-center">Không có bản sao phù hợp.</td></tr></tbody>
+    </table></div>
+    <nav th:replace="~{fragments/layout :: pagination(${result}, @{/librarian/copies(keyword=${keyword}, status=${status})})}"></nav>
+</div></div>
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body></html>
