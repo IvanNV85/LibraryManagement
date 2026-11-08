@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 
 /** Thông báo trong web gửi tới một tài khoản (UC15). Tạo qua NotificationService. */
 @Entity
-@Table(name = "notification")
+@Table(name = "notifications")
 @Getter
 @Setter
 @NoArgsConstructor

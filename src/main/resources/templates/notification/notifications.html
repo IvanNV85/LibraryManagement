@@ -2,41 +2,47 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/layout :: head('Thông báo')}"></head>
 <body>
+<th:block th:replace="~{borrowing/assets :: assets}"></th:block>
 <div th:replace="~{fragments/layout :: navbar}"></div>
 
 <!-- UC15 Xem thông báo trong web -->
-<div class="container my-4" style="max-width: 820px;">
+<div class="container my-4" style="max-width: 860px;">
     <div class="panel page-spacer">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h1 class="h4 mb-0">Thông báo</h1>
-            <form th:action="@{/reader/notifications/read-all}" method="post" th:if="${unreadNotifications > 0}">
-                <button class="btn btn-sm btn-outline-secondary" type="submit">Đánh dấu tất cả đã đọc</button>
-            </form>
+        <div class="borrow-page-head">
+            <h1 class="h4">Thông báo</h1>
+            <div th:replace="~{borrowing/assets :: subnav('notifications')}"></div>
         </div>
+
+        <form class="js-read-all mb-3" th:action="@{/reader/notifications/read-all}" method="post"
+              th:if="${unreadNotifications != null and unreadNotifications > 0}">
+            <button class="btn btn-sm btn-outline-secondary" type="submit"><i class="bi bi-check2-all"></i> Đánh dấu tất cả đã đọc</button>
+        </form>
 
         <div th:replace="~{fragments/layout :: alerts}"></div>
 
-        <div class="alert alert-info" th:if="${notifications.isEmpty()}">Bạn chưa có thông báo nào.</div>
+        <div class="empty-state" th:if="${notifications.isEmpty()}">
+            <img th:src="@{/images/borrowing/empty-notifications.svg}" alt="">
+            <h2>Bạn chưa có thông báo nào</h2>
+            <p>Nhắc sắp đến hạn trả, kết quả duyệt yêu cầu mượn và các cập nhật khác sẽ hiện ở đây.</p>
+        </div>
 
-        <div class="list-group">
-            <div class="list-group-item" th:each="n : ${notifications}"
-                 th:classappend="${!n.seen} ? 'list-group-item-primary'">
-                <div class="d-flex gap-3">
-                    <span class="icon-circle"><i class="bi" th:classappend="${n.type.icon}"></i></span>
-                    <div class="flex-grow-1">
-                        <div class="d-flex justify-content-between gap-2">
-                            <span th:class="${!n.seen} ? 'fw-bold' : 'fw-semibold'" th:text="${n.title}">Tiêu đề</span>
-                            <span class="small text-muted text-nowrap"
-                                  th:text="${#temporals.format(n.createdAt, 'dd/MM/yyyy HH:mm')}">01/01/2026</span>
-                        </div>
-                        <div th:text="${n.content}">Nội dung</div>
-                        <div class="mt-2 d-flex gap-2">
-                            <a class="btn btn-sm btn-outline-primary" th:href="@{${n.type.path}}">Xem</a>
-                            <form th:if="${!n.seen}" th:action="@{/reader/notifications/{id}/read(id=${n.id})}" method="post">
-                                <input type="hidden" name="page" th:value="${result.number}">
-                                <button class="btn btn-sm btn-outline-secondary" type="submit">Đánh dấu đã đọc</button>
-                            </form>
-                        </div>
+        <div class="notice-list" th:if="${!notifications.isEmpty()}">
+            <div class="notice-item" th:each="n : ${notifications}"
+                 th:classappend="${'notice--' + n.type.name().toLowerCase() + (n.seen ? '' : ' is-unread')}">
+                <span class="notice-icon"><i class="bi" th:classappend="${n.type.icon}"></i></span>
+                <div class="notice-main">
+                    <div class="notice-head">
+                        <span class="notice-title" th:text="${n.title}">Tiêu đề</span>
+                        <span class="notice-time" th:text="${#temporals.format(n.createdAt, 'dd/MM/yyyy HH:mm')}">01/01/2026</span>
+                    </div>
+                    <div th:text="${n.content}">Nội dung</div>
+                    <div class="notice-actions">
+                        <a class="btn btn-sm btn-outline-primary" th:href="@{${n.type.path}}">Xem</a>
+                        <form class="js-mark-read" th:if="${!n.seen}"
+                              th:action="@{/reader/notifications/{id}/read(id=${n.id})}" method="post">
+                            <input type="hidden" name="page" th:value="${result.number}">
+                            <button class="btn btn-sm btn-outline-secondary" type="submit">Đánh dấu đã đọc</button>
+                        </form>
                     </div>
                 </div>
             </div>

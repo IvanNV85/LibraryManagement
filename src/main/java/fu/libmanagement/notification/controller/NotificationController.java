@@ -22,16 +22,16 @@ public class NotificationController {
 
     private final NotificationService notificationService;
 
-    @GetMapping("/reader/notification")
+    @GetMapping("/reader/notifications")
     public String list(@RequestParam(defaultValue = "0") int page, HttpServletRequest request, Model model) {
         Page<Notification> result = notificationService.list(SessionUser.get(request).getId(), page);
         model.addAttribute("result", result);
-        model.addAttribute("notification", result.getContent());
-        return "notification/notification";
+        model.addAttribute("notifications", result.getContent());
+        return "notification/notifications";
     }
 
 
-    @PostMapping("/reader/notification/{id}/read")
+    @PostMapping("/reader/notifications/{id}/read")
     public String markRead(@PathVariable Long id, @RequestParam(defaultValue = "0") int page,
                            HttpServletRequest request, RedirectAttributes ra) {
         try {
@@ -39,13 +39,13 @@ public class NotificationController {
         } catch (BusinessException e) {
             ra.addFlashAttribute("error", e.getMessage());
         }
-        return "redirect:/reader/notification?page=" + Math.max(page, 0);
+        return "redirect:/reader/notifications?page=" + Math.max(page, 0);
     }
 
-    @PostMapping("/reader/notification/read-all")
+    @PostMapping("/reader/notifications/read-all")
     public String markAllRead(HttpServletRequest request, RedirectAttributes ra) {
         int n = notificationService.markAllRead(SessionUser.get(request).getId());
         ra.addFlashAttribute("message", n == 0 ? "Không có thông báo chưa đọc" : "Đã đánh dấu " + n + " thông báo là đã đọc");
-        return "redirect:/reader/notification";
+        return "redirect:/reader/notifications";
     }
 }

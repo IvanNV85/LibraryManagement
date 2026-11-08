@@ -20,7 +20,7 @@
     </a>
     <a class="account-item" th:href="@{/reader/notifications}">
         <span class="icon-circle"><i class="bi bi-bell"></i></span>Thông báo
-        <span class="badge rounded-pill bg-danger ms-auto"
+        <span class="js-unread-badge badge rounded-pill bg-danger ms-auto"
               th:if="${unreadNotifications != null and unreadNotifications > 0}"
               th:text="${unreadNotifications}">0</span>
     </a>

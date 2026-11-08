@@ -13,10 +13,10 @@ public enum NotificationType {
     RESERVATION_READY("Sách đặt trước đã có", "bi-bookmark-check", "/reader/reservations"),
     NEW_BOOK("Sách mới", "bi-journal-plus", "/books"),
     FINE_CREATED("Khoản phạt mới", "bi-cash-coin", "/reader/loans"),
-    SYSTEM("Thông báo hệ thống", "bi-info-circle", "/reader/notification");
+    SYSTEM("Thông báo hệ thống", "bi-info-circle", "/reader/notifications");
 
     private final String label;
-    /** Tên icon Bootstrap Icons. */
+
     private final String icon;
     private final String path;
 }
