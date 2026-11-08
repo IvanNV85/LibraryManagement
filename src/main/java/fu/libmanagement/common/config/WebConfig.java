@@ -3,6 +3,7 @@ package fu.libmanagement.common.config;
 import fu.libmanagement.auth.interceptor.RoleInterceptor;
 import fu.libmanagement.common.enums.Role;
 import fu.libmanagement.common.util.FileStorageService;
+import fu.libmanagement.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -22,13 +23,14 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebConfig implements WebMvcConfigurer {
 
     private final FileStorageService fileStorageService;
+    private final UserRepository userRepository;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new RoleInterceptor()).addPathPatterns("/account/**");
-        registry.addInterceptor(new RoleInterceptor(Role.READER)).addPathPatterns("/reader/**");
-        registry.addInterceptor(new RoleInterceptor(Role.LIBRARIAN, Role.ADMIN)).addPathPatterns("/librarian/**");
-        registry.addInterceptor(new RoleInterceptor(Role.ADMIN)).addPathPatterns("/admin/**");
+        registry.addInterceptor(new RoleInterceptor(userRepository)).addPathPatterns("/account/**");
+        registry.addInterceptor(new RoleInterceptor(userRepository, Role.READER)).addPathPatterns("/reader/**");
+        registry.addInterceptor(new RoleInterceptor(userRepository, Role.LIBRARIAN, Role.ADMIN)).addPathPatterns("/librarian/**");
+        registry.addInterceptor(new RoleInterceptor(userRepository, Role.ADMIN)).addPathPatterns("/admin/**");
     }
 
     /** Cho phép xem ảnh đã upload (ảnh bìa sách) qua /uploads/**. */

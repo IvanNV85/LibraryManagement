@@ -1,0 +1,23 @@
+<!DOCTYPE html><html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout-librarian :: head('Thông tin nhân viên')}"></head><body>
+<div class="dashboard-layout">
+    <aside th:replace="~{fragments/layout-librarian :: sidebar('admin-staff')}"></aside>
+    <div class="dashboard-main">
+        <header th:replace="~{fragments/layout-librarian :: topbar('Thông tin nhân viên')}"></header>
+        <main class="dashboard-content">
+<div class="w-100" style="max-width:720px"><div class="panel border-0 shadow-sm p-4">
+    <h3 th:text="${creating} ? 'Thêm thủ thư' : 'Cập nhật nhân viên'">Nhân viên</h3><hr>
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+    <form th:action="${creating} ? @{/admin/staff} : @{/admin/staff/{id}(id=${staffId})}" th:object="${form}" method="post">
+        <div class="mb-3"><label class="form-label" for="fullName">Họ tên</label><input class="form-control" id="fullName" th:field="*{fullName}" maxlength="100" required></div>
+        <div class="mb-3"><label class="form-label" for="email">Email</label><input class="form-control" id="email" type="email" th:field="*{email}" maxlength="150" required></div>
+        <div class="mb-3"><label class="form-label" for="phone">Điện thoại</label><input class="form-control" id="phone" th:field="*{phone}" maxlength="10" pattern="0[0-9]{9}"></div>
+        <div class="mb-3"><label class="form-label" for="address">Địa chỉ</label><input class="form-control" id="address" th:field="*{address}" maxlength="255"></div>
+        <th:block th:if="${creating}"><div class="mb-3"><label class="form-label" for="password">Mật khẩu</label><input class="form-control" type="password" id="password" th:field="*{password}" minlength="6" required></div>
+        <div class="mb-3"><label class="form-label" for="confirmPassword">Nhập lại mật khẩu</label><input class="form-control" type="password" id="confirmPassword" th:field="*{confirmPassword}" minlength="6" required></div></th:block>
+        <button class="btn btn-primary">Lưu</button> <a class="btn btn-outline-secondary" th:href="@{/admin/staff}">Hủy</a>
+    </form>
+</div></div>
+        </main>
+    </div>
+</div></body></html>

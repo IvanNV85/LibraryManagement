@@ -1,0 +1,25 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout-librarian :: head('Phiếu nhập sách')}"></head>
+<body><div class="dashboard-layout">
+    <aside th:replace="~{fragments/layout-librarian :: sidebar('purchase-orders')}"></aside>
+    <div class="dashboard-main">
+        <header th:replace="~{fragments/layout-librarian :: topbar('Phiếu nhập sách')}"></header>
+        <main class="dashboard-content">
+<div class="w-100"><div class="panel border-0 shadow-sm p-4">
+    <h3>PHIẾU NHẬP SÁCH</h3><hr>
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+    <a th:if="${currentUser.librarian}" class="btn btn-primary mb-3" th:href="@{/librarian/purchase-orders/new}">Tạo phiếu nhập</a>
+    <div class="table-responsive"><table class="table table-hover align-middle">
+        <thead class="table-light"><tr><th>Mã phiếu</th><th>Nhà cung cấp</th><th>Người lập</th><th>Ngày lập</th><th>Trạng thái</th><th>Nhận kho</th><th></th></tr></thead>
+        <tbody><tr th:each="order : ${orders}">
+            <td th:text="${order.id}"></td><td th:text="${order.supplier}"></td><td th:text="${order.creator}"></td>
+            <td th:text="${order.createdAt}"></td><td th:text="${order.status}"></td>
+            <td th:text="${order.receivedAt == null ? 'Chưa nhận' : 'Đã nhận'}"></td>
+            <td><a th:href="@{/librarian/purchase-orders/{id}(id=${order.id})}">Chi tiết</a></td>
+        </tr></tbody>
+    </table></div>
+</div></div>
+        </main>
+    </div>
+</div></body></html>

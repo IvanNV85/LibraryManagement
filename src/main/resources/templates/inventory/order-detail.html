@@ -1,0 +1,39 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout-librarian :: head('Chi tiết phiếu nhập')}"></head>
+<body><div class="dashboard-layout">
+    <aside th:replace="~{fragments/layout-librarian :: sidebar('purchase-orders')}"></aside>
+    <div class="dashboard-main">
+        <header th:replace="~{fragments/layout-librarian :: topbar('Chi tiết phiếu nhập')}"></header>
+        <main class="dashboard-content">
+<div class="w-100"><div class="panel border-0 shadow-sm p-4">
+    <h3>CHI TIẾT PHIẾU NHẬP #<span th:text="${order.id}"></span></h3><hr>
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+    <p><strong>Nhà cung cấp:</strong> <span th:text="${order.supplier}"></span> · <strong>Trạng thái:</strong> <span th:text="${order.status}"></span></p>
+    <p><strong>Người lập:</strong> <span th:text="${order.creator}"></span> · <strong>Ngày lập:</strong> <span th:text="${order.createdAt}"></span></p>
+    <p th:if="${order.approvedAt != null}"><strong>Người duyệt:</strong> <span th:text="${order.approver}"></span> · <strong>Ngày duyệt:</strong> <span th:text="${order.approvedAt}"></span></p>
+    <p th:if="${order.receivedAt != null}"><strong>Ngày nhận kho:</strong> <span th:text="${order.receivedAt}"></span></p>
+    <p th:if="${order.note != null and !order.note.isEmpty()}"><strong>Ghi chú:</strong> <span th:text="${order.note}"></span></p>
+    <form th:if="${currentUser.admin and order.status == 'PENDING'}" th:action="@{/admin/purchase-orders/{id}/approve(id=${order.id})}" method="post" class="mb-3">
+        <button class="btn btn-success" type="submit">Duyệt phiếu</button>
+    </form>
+    <p th:if="${order.status == 'APPROVED' and order.receivedAt == null and currentUser.librarian}">Ghi số lượng sách hợp lệ thực nhận. Nếu có chênh lệch, ghi rõ lý do. ISBN chưa có trong danh mục cần được biên mục trước khi nhận.</p>
+    <form th:action="@{/librarian/purchase-orders/{id}/receive(id=${order.id})}" method="post">
+        <div class="table-responsive"><table class="table table-hover align-middle"><thead class="table-light"><tr><th>ISBN</th><th>Tên sách</th><th>Đầu sách</th><th>SL đặt</th><th>Đơn giá</th><th>SL thực nhận</th><th>Chênh lệch / ghi chú</th></tr></thead>
+            <tbody><tr th:each="item : ${items}">
+                <td th:text="${item.isbn}"></td><td th:text="${item.title}"></td>
+                <td th:text="${item.bookId == null ? 'Chưa liên kết; kiểm tra ISBN khi nhận' : 'Đã liên kết'}"></td>
+                <td th:text="${item.quantity}"></td><td th:text="${item.unitPrice}"></td>
+                <td><input type="hidden" name="itemId" th:value="${item.id}">
+                    <input th:if="${order.status == 'APPROVED' and order.receivedAt == null and currentUser.librarian}" class="form-control" type="number" name="receivedQuantity" min="0" th:value="${item.quantity}" required>
+                    <span th:unless="${order.status == 'APPROVED' and order.receivedAt == null and currentUser.librarian}" th:text="${item.receivedQuantity}"></span></td>
+                <td><input th:if="${order.status == 'APPROVED' and order.receivedAt == null and currentUser.librarian}" class="form-control" name="discrepancyNote" maxlength="255" th:value="${item.discrepancyNote}">
+                    <span th:unless="${order.status == 'APPROVED' and order.receivedAt == null and currentUser.librarian}" th:text="${item.discrepancyNote}"></span></td>
+            </tr></tbody></table></div>
+        <button th:if="${order.status == 'APPROVED' and order.receivedAt == null and currentUser.librarian}" class="btn btn-primary" type="submit">Xác nhận nhận kho</button>
+        <a class="btn btn-secondary" th:href="@{/librarian/purchase-orders}">Quay lại</a>
+    </form>
+</div></div>
+        </main>
+    </div>
+</div></body></html>

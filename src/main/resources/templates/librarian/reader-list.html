@@ -1,11 +1,15 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/layout :: head('Quản lý độc giả')}"></head>
+<head th:replace="~{fragments/layout-librarian :: head('Quản lý độc giả')}"></head>
 <body>
-<div th:replace="~{fragments/layout :: navbar}"></div>
+<div class="dashboard-layout">
+    <aside th:replace="~{fragments/layout-librarian :: sidebar('readers')}"></aside>
+    <div class="dashboard-main">
+        <header th:replace="~{fragments/layout-librarian :: topbar('Quản lý độc giả')}"></header>
+        <main class="dashboard-content">
 
-<div class="container my-4">
-    <div class="panel page-spacer">
+<div class="w-100">
+    <div class="panel border-0 shadow-sm p-4">
         <h3>QUẢN LÝ ĐỘC GIẢ</h3>
         <hr>
 
@@ -33,8 +37,8 @@
 
         <h4 class="mt-4">Danh sách độc giả (<span th:text="${result.totalElements}">0</span>)</h4>
 
-        <table class="table table-bordered">
-            <thead>
+        <div class="table-responsive"><table class="table table-hover align-middle">
+            <thead class="table-light">
             <tr>
                 <th>Họ tên</th>
                 <th>Email</th>
@@ -81,13 +85,15 @@
                 </td>
             </tr>
             </tbody>
-        </table>
+        </table></div>
 
         <!-- Phân trang -->
         <nav th:replace="~{fragments/layout :: pagination(${result}, @{/librarian/readers(keyword=${keyword}, status=${status})})}"></nav>
     </div>
 </div>
 
-<div th:replace="~{fragments/layout :: footer}"></div>
+        </main>
+    </div>
+</div>
 </body>
 </html>

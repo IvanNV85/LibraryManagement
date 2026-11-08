@@ -1,0 +1,83 @@
+﻿<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head th:replace="~{fragments/layout-librarian :: head('Thêm bản sao')}"></head>
+  <body>
+    <div class="dashboard-layout">
+    <aside th:replace="~{fragments/layout-librarian :: sidebar('copies')}"></aside>
+    <div class="dashboard-main">
+        <header th:replace="~{fragments/layout-librarian :: topbar('Thêm bản sao')}"></header>
+        <main class="dashboard-content">
+    <div class="w-100">
+      <div class="panel border-0 shadow-sm p-4">
+        <h3>THÊM BẢN SAO SÁCH</h3>
+        <hr />
+        <div th:replace="~{fragments/layout :: alerts}"></div>
+        <form th:action="@{/librarian/copies}" method="post">
+          <div class="mb-3">
+            <label class="form-label" for="bookId">Đầu sách</label>
+            <select class="form-select" id="bookId" name="bookId" required>
+              <option value="">Chọn đầu sách</option>
+              <option
+                th:each="book : ${books}"
+                th:value="${book.id}"
+                th:selected="${bookId == book.id}"
+                th:text="${book.title + ' — ' + book.isbn}"
+              ></option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label" for="barcode">Barcode</label
+            ><input
+              class="form-control"
+              id="barcode"
+              name="barcode"
+              th:value="${barcode}"
+              maxlength="30"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label class="form-label" for="shelfLocation">Vị trí kệ</label
+            ><input
+              class="form-control"
+              id="shelfLocation"
+              name="shelfLocation"
+              th:value="${shelfLocation}"
+              maxlength="50"
+            />
+          </div>
+          <div class="mb-3">
+            <label class="form-label" for="price">Giá trị</label
+            ><input
+              class="form-control"
+              type="number"
+              id="price"
+              name="price"
+              th:value="${price}"
+              min="0"
+              max="9999999999.99"
+              step="0.01"
+            />
+          </div>
+          <div class="mb-3">
+            <label class="form-label" for="note">Ghi chú</label
+            ><textarea
+              class="form-control"
+              id="note"
+              name="note"
+              maxlength="255"
+              th:text="${note}"
+            ></textarea>
+          </div>
+          <button class="btn btn-primary">Thêm bản sao</button>
+          <a class="btn btn-secondary" th:href="@{/librarian/copies}"
+            >Quay lại</a
+          >
+        </form>
+      </div>
+    </div>
+            </main>
+    </div>
+</div>
+  </body>
+</html>

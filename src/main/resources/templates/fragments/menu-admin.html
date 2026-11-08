@@ -7,7 +7,15 @@
   Gợi ý: UC23 quản lý nhân viên, UC24 cấu hình quy định, UC25 báo cáo thống kê.
 -->
 <th:block th:fragment="items">
-    <!-- Thêm các mục của admin bên dưới dòng này -->
+    <a class="account-item" th:href="@{/admin/staff}">
+        <span class="icon-circle"><i class="bi bi-person-badge"></i></span>Quản lý nhân viên
+    </a>
+    <a class="account-item" th:href="@{/admin/settings}">
+        <span class="icon-circle"><i class="bi bi-gear"></i></span>Cấu hình quy định
+    </a>
+    <a class="account-item" th:href="@{/admin/reports}">
+        <span class="icon-circle"><i class="bi bi-bar-chart"></i></span>Báo cáo thống kê
+    </a>
 </th:block>
 </body>
 </html>

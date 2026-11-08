@@ -1,0 +1,44 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout-librarian :: head('Chi tiết bản sao')}"></head>
+<body>
+<div class="dashboard-layout">
+    <aside th:replace="~{fragments/layout-librarian :: sidebar('copies')}"></aside>
+    <div class="dashboard-main">
+        <header th:replace="~{fragments/layout-librarian :: topbar('Chi tiết bản sao')}"></header>
+        <main class="dashboard-content">
+<div class="w-100"><div class="panel border-0 shadow-sm p-4">
+    <h3>CHI TIẾT BẢN SAO</h3><hr>
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+    <dl class="row">
+        <dt class="col-sm-3">Barcode</dt><dd class="col-sm-9" th:text="${copy.barcode}"></dd>
+        <dt class="col-sm-3">Tên sách</dt><dd class="col-sm-9" th:text="${copy.book.title}"></dd>
+        <dt class="col-sm-3">ISBN</dt><dd class="col-sm-9" th:text="${copy.book.isbn}"></dd>
+        <dt class="col-sm-3">Trạng thái</dt><dd class="col-sm-9" th:text="${copy.status}"></dd>
+        <dt class="col-sm-3">Dòng phiếu nhập</dt><dd class="col-sm-9" th:text="${copy.purchaseOrderItemId != null ? copy.purchaseOrderItemId : '—'}"></dd>
+        <dt class="col-sm-3">Ngày tạo</dt><dd class="col-sm-9" th:text="${copy.createdAt}"></dd>
+    </dl>
+    <h4>Cập nhật thông tin</h4>
+    <form th:action="@{/librarian/copies/{id}(id=${copy.id})}" method="post">
+        <div class="mb-3"><label class="form-label" for="shelfLocation">Vị trí kệ</label><input class="form-control" id="shelfLocation" name="shelfLocation" th:value="${copy.shelfLocation}" maxlength="50"></div>
+        <div class="mb-3"><label class="form-label" for="price">Giá trị</label><input class="form-control" type="number" id="price" name="price" th:value="${copy.price}" min="0" max="9999999999.99" step="0.01"></div>
+        <div class="mb-3"><label class="form-label" for="note">Ghi chú</label><textarea class="form-control" id="note" name="note" maxlength="255" th:text="${copy.note}"></textarea></div>
+        <button class="btn btn-primary">Lưu thông tin</button>
+    </form>
+    <div th:if="${copy.status.name() == 'AVAILABLE' or copy.status.name() == 'DAMAGED' or copy.status.name() == 'LOST'}" class="mt-4">
+        <h4>Ghi nhận tình trạng</h4>
+        <p>Chỉ bản sao không có lượt mượn hoặc đặt trước còn hiệu lực mới được chuyển trạng thái.</p>
+        <form th:action="@{/librarian/copies/{id}/condition(id=${copy.id})}" method="post" class="d-flex gap-2 flex-wrap">
+            <select class="form-select w-auto" name="status" aria-label="Tình trạng mới" required>
+                <option value="DAMAGED" th:if="${copy.status.name() == 'AVAILABLE'}">Hỏng</option>
+                <option value="LOST" th:if="${copy.status.name() == 'AVAILABLE'}">Mất</option>
+                <option value="DISPOSED">Thanh lý</option>
+            </select><button class="btn btn-danger">Ghi nhận</button>
+        </form>
+    </div>
+    <a class="btn btn-secondary mt-4" th:href="@{/librarian/copies}">Quay lại danh sách</a>
+</div></div>
+        </main>
+    </div>
+</div>
+</body></html>

@@ -1,0 +1,41 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout-librarian :: head('Tạo phiếu nhập')}"></head>
+<body><div class="dashboard-layout">
+    <aside th:replace="~{fragments/layout-librarian :: sidebar('purchase-orders')}"></aside>
+    <div class="dashboard-main">
+        <header th:replace="~{fragments/layout-librarian :: topbar('Tạo phiếu nhập')}"></header>
+        <main class="dashboard-content">
+<div class="w-100"><div class="panel border-0 shadow-sm p-4">
+    <h3>TẠO PHIẾU NHẬP</h3><hr><div th:replace="~{fragments/layout :: alerts}"></div>
+    <form th:action="@{/librarian/purchase-orders}" method="post">
+        <div class="mb-3"><label class="form-label" for="supplierId">Nhà cung cấp</label>
+            <select class="form-select" name="supplierId" id="supplierId" required><option value="">Chọn nhà cung cấp</option>
+                <option th:each="s : ${suppliers}" th:value="${s.id}" th:text="${s.name}"></option></select></div>
+        <div class="mb-3"><label class="form-label" for="note">Ghi chú</label><input class="form-control" id="note" name="note" maxlength="255"></div>
+        <p>Nhập ISBN và tên sách. ISBN đã có trong danh mục sẽ được liên kết tự động.</p>
+        <div class="table-responsive"><table class="table table-hover align-middle"><thead class="table-light"><tr><th>ISBN</th><th>Tên sách</th><th>Số lượng</th><th>Đơn giá</th><th></th></tr></thead>
+            <tbody id="order-lines"><tr><td><input class="form-control" name="isbn" maxlength="20" required></td>
+                <td><input class="form-control" name="title" maxlength="255" required></td>
+                <td><input class="form-control" type="number" name="quantity" min="1" required></td>
+                <td><input class="form-control" type="number" name="unitPrice" min="0" step="0.01" required></td>
+                <td><button class="btn btn-outline-danger remove-line" type="button">Xóa dòng</button></td></tr></tbody></table></div>
+        <button class="btn btn-outline-primary" id="add-line" type="button">Thêm dòng sách</button>
+        <button class="btn btn-primary" type="submit">Tạo phiếu</button>
+        <a class="btn btn-secondary" th:href="@{/librarian/purchase-orders}">Quay lại</a>
+    </form>
+</div></div>
+        </main>
+    </div>
+</div>
+<script>
+const lines = document.getElementById('order-lines');
+document.getElementById('add-line').addEventListener('click', () => {
+    const row = lines.rows[0].cloneNode(true);
+    row.querySelectorAll('input').forEach(input => input.value = '');
+    lines.appendChild(row);
+});
+lines.addEventListener('click', event => {
+    if (event.target.classList.contains('remove-line') && lines.rows.length > 1) event.target.closest('tr').remove();
+});
+</script></body></html>
