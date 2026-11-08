@@ -12,6 +12,19 @@
     <a class="account-item" th:href="@{/reader/favorites}">
         <span class="icon-circle"><i class="bi bi-heart"></i></span>Sách yêu thích
     </a>
+    <!-- Thêm các mục của độc giả bên dưới dòng này -->
+    <a class="account-item" th:href="@{/reader/loans}">
+        <span class="icon-circle"><i class="bi bi-clock-history"></i></span>Lịch sử mượn trả
+    </a>
+    <a class="account-item" th:href="@{/reader/reservations}">
+        <span class="icon-circle"><i class="bi bi-bookmark-heart"></i></span>Sách đặt trước
+    </a>
+    <a class="account-item" th:href="@{/reader/notifications}">
+        <span class="icon-circle"><i class="bi bi-bell"></i></span>Thông báo
+        <span class="js-unread-badge badge rounded-pill bg-danger ms-auto"
+              th:if="${unreadNotifications != null and unreadNotifications > 0}"
+              th:text="${unreadNotifications}">0</span>
+    </a>
 </th:block>
 </body>
 </html>

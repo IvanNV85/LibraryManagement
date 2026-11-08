@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<th:block th:fragment="assets">
+    <link rel="stylesheet" th:href="@{/css/borrowing.css}">
+    <script defer th:src="@{/js/borrowing.js}"></script>
+</th:block>
+
+<div th:fragment="subnav(active)" class="borrow-subnav">
+    <a th:href="@{/reader/loans}"
+       th:classappend="${active == 'loans'} ? 'is-active'">Mượn trả</a>
+    <a th:href="@{/reader/reservations}"
+       th:classappend="${active == 'reservations'} ? 'is-active'">Đặt trước</a>
+    <a th:href="@{/reader/notifications}"
+       th:classappend="${active == 'notifications'} ? 'is-active'">Thông báo</a>
+</div>
+</body>
+</html>
