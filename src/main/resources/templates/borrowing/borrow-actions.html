@@ -17,6 +17,21 @@
 </div>
 
 <!--
+  Nút nhỏ cho thẻ sách ở trang chủ và danh sách: <th:block th:replace="~{borrowing/borrow-actions :: cardButton(${b.id})}"></th:block>
+  Khách thấy "Đăng nhập để mượn"; độc giả thấy "Mượn / đặt trước" (mở trang mượn sách, trang đó tự hiện Mượn hay Đặt trước
+  tùy còn bản hay hết bản); thủ thư và admin không thấy gì.
+-->
+<th:block th:fragment="cardButton(bookId)">
+    <a th:if="${currentUser == null}" class="btn btn-sm btn-outline-primary w-100" th:href="@{/login}">
+        <i class="bi bi-box-arrow-in-right"></i> Đăng nhập để mượn
+    </a>
+    <a th:if="${currentUser != null and currentUser.reader}" class="btn btn-sm btn-primary w-100"
+       th:href="@{/reader/loans/new(bookId=${bookId})}">
+        <i class="bi bi-bookmark-plus"></i> Mượn / đặt trước
+    </a>
+</th:block>
+
+<!--
   Khối nút mượn / đặt trước đầy đủ, dùng cho trang chi tiết sách (UC8) và trang mượn sách.
   Cần một BorrowBookInfo: controller gọi loanService.getBorrowInfo(userId, bookId) rồi đưa vào model, ví dụ:
       model.addAttribute("info", loanService.getBorrowInfo(SessionUser.get(request).getId(), id));

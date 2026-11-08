@@ -16,6 +16,10 @@
         </div>
         <div class="small text-muted mt-1">ISBN: <span th:text="${b.isbn}"></span></div>
     </div>
+    <!-- Nút mượn / đặt trước (UC11, UC13) lấy từ phần borrowing; thủ thư và admin không thấy -->
+    <div class="card-footer bg-transparent border-0 pt-0" th:if="${currentUser == null or currentUser.reader}">
+        <th:block th:replace="~{borrowing/borrow-actions :: cardButton(${b.id})}"></th:block>
+    </div>
 </div>
 
 </body>
