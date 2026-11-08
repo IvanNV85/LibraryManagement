@@ -35,4 +35,25 @@ public interface BookRepository extends JpaRepository<Book, Long> {
 
     /** 5 sách mới nhất đang hiển thị (cùng giờ thêm thì lấy cuốn có id lớn hơn). */
     List<Book> findTop5ByVisibleTrueOrderByCreatedAtDescIdDesc();
+
+    boolean existsByIsbn(String isbn);
+
+    boolean existsByIsbnAndIdNot(String isbn, Long id);
+
+    long countByVisibleTrue();
+
+    long countByVisibleFalse();
+
+    /**
+     * Tìm sách cho Thủ thư (bao gồm cả sách đang ẩn và đang hiện).
+     * kw rỗng hoặc null thì lấy tất cả sách.
+     */
+    @Query("""
+            select b from Book b
+            where (:kw is null or :kw = ''
+                   or lower(b.title) like :kw
+                   or lower(b.isbn) like :kw
+                   or exists (select 1 from b.authors a where lower(a.name) like :kw))
+            """)
+    Page<Book> searchForLibrarian(@Param("kw") String kw, Pageable pageable);
 }
