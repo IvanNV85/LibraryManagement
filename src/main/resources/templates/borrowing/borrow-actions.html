@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<!--
+  Nút "Mượn sách" để nhúng vào trang chi tiết sách (UC8, do Gia Huy làm).
+  Dùng: <div th:replace="~{borrowing/borrow-actions :: actions(${book.id})}"></div>
+  Khách thấy nút đăng nhập; độc giả thấy nút mở trang xác nhận mượn / đặt trước; thủ thư và admin không thấy gì.
+-->
+<div th:fragment="actions(bookId)">
+    <a th:if="${currentUser == null}" class="btn btn-outline-primary" th:href="@{/login}">
+        <i class="bi bi-box-arrow-in-right"></i> Đăng nhập để mượn sách
+    </a>
+    <a th:if="${currentUser != null and currentUser.reader}" class="btn btn-primary"
+       th:href="@{/reader/loans/new(bookId=${bookId})}">
+        <i class="bi bi-bookmark-plus"></i> Mượn / đặt trước
+    </a>
+</div>
+
+<!--
+  Khối nút mượn / đặt trước đầy đủ, dùng cho trang chi tiết sách (UC8) và trang mượn sách.
+  Cần một BorrowBookInfo: controller gọi loanService.getBorrowInfo(userId, bookId) rồi đưa vào model, ví dụ:
+      model.addAttribute("info", loanService.getBorrowInfo(SessionUser.get(request).getId(), id));
+  Trong trang chi tiết: <th:block th:if="${currentUser != null and currentUser.reader}"
+                                  th:replace="~{borrowing/borrow-actions :: panel(${info})}"></th:block>
+  Hiển thị: còn bản -> "Gửi yêu cầu mượn"; hết bản -> "Đặt trước"; đã có phiếu hoặc đã đặt -> thông báo, không có nút.
+-->
+<th:block th:fragment="panel(info)">
+    <!-- Đã có yêu cầu / phiếu đang hiệu lực cho cuốn này -->
+    <div class="alert alert-info" th:if="${info.activeLoanStatus != null}">
+        Bạn đã có yêu cầu hoặc phiếu mượn cuốn này (trạng thái:
+        <strong th:text="${info.activeLoanStatus.label}">Chờ duyệt</strong>).
+        <a th:href="@{/reader/loans}">Xem lịch sử mượn trả</a>
+    </div>
+
+    <!-- Còn bản: gửi yêu cầu mượn (UC11) -->
+    <th:block th:if="${info.activeLoanStatus == null and info.availableCopies > 0}">
+        <form th:action="@{/reader/loans/request}" method="post" data-once>
+            <input type="hidden" name="bookId" th:value="${info.id}">
+            <button class="btn btn-primary" type="submit"><i class="bi bi-send"></i> Gửi yêu cầu mượn</button>
+        </form>
+        <p class="small text-muted mt-2 mb-0">
+            Thủ thư sẽ duyệt yêu cầu; sau khi được duyệt, bạn đến quầy nhận sách trong thời hạn giữ sách.
+        </p>
+    </th:block>
+
+    <!-- Hết bản: đặt trước (UC13) -->
+    <th:block th:if="${info.activeLoanStatus == null and info.availableCopies == 0}">
+        <div class="alert alert-info" th:if="${info.reserved}">
+            Bạn đã đặt trước cuốn này. Thủ thư sẽ liên hệ khi có sách.
+            <a th:href="@{/reader/reservations}">Xem đặt trước của tôi</a>
+        </div>
+        <form th:if="${!info.reserved}" th:action="@{/reader/reservations}" method="post" data-once>
+            <input type="hidden" name="bookId" th:value="${info.id}">
+            <button class="btn btn-warning" type="submit"><i class="bi bi-bookmark-plus"></i> Đặt trước</button>
+        </form>
+        <p class="small text-muted mt-2 mb-0" th:if="${!info.reserved}">
+            Đặt trước chỉ ghi nhận nhu cầu, thủ thư sẽ tự liên hệ khi sách có lại.
+        </p>
+    </th:block>
+</th:block>
+</body>
+</html>

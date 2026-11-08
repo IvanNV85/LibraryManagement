@@ -52,6 +52,7 @@ DROP TABLE IF EXISTS settings;
 DROP TABLE IF EXISTS book_authors;
 DROP TABLE IF EXISTS books;
 DROP TABLE IF EXISTS authors;
+DROP TABLE IF EXISTS publishers;
 DROP TABLE IF EXISTS categories;
 DROP TABLE IF EXISTS auth_tokens;
 DROP TABLE IF EXISTS reader_cards;
@@ -443,6 +444,14 @@ INSERT INTO authors (name) VALUES
 (N'Tô Hoài'), (N'Vũ Trọng Phụng'), (N'Nguyễn Du'), (N'Ngô Tất Tố'), (N'Paulo Coelho'),
 (N'Robert C. Martin'), (N'Joshua Bloch'), (N'Craig Walls'), (N'Andres Sacco'), (N'Dale Carnegie'),
 (N'Nguyễn Văn Mẫu');
+
+INSERT INTO publishers (name) VALUES
+(N'NXB Kim Đồng'), (N'NXB Trẻ'), (N'NXB Giáo dục Việt Nam'), (N'NXB Văn học'),
+(N'NXB Tổng hợp TP.HCM'), (N'NXB Tổng hợp'), (N'NXB Lao Động'), (N'NXB Hội Nhà Văn'),
+(N'NXB Thế Giới'), (N'NXB Phụ Nữ Việt Nam'), (N'NXB Tri Thức'), (N'NXB Thông tin và Truyền thông'),
+(N'NXB Mẫu'), (N'Prentice Hall'), (N'Addison-Wesley'), (N'Manning'), (N'Apress'),
+(N'O''Reilly Media'), (N'Packt Publishing'), (N'McGraw-Hill Education'),
+(N'Pearson'), (N'Wiley'), (N'MIT Press'), (N'No Starch Press');
 
 /* Ảnh bìa nằm trong src/main/resources/static/images/covers/ (được commit cùng code).
    ISBN bên dưới là ISBN mẫu (không phải ISBN thật), trừ cuốn "Beginning Spring Data" */

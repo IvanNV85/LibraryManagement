@@ -26,7 +26,11 @@ public class AuthController {
 
     @GetMapping("/login")
     public String loginPage(HttpServletRequest request) {
-        if (SessionUser.get(request) != null) {
+        SessionUser user = SessionUser.get(request);
+        if (user != null) {
+            if (user.isStaff()) {
+                return "redirect:/librarian/dashboard";
+            }
             return "redirect:/";
         }
         return "auth/login";
@@ -40,6 +44,9 @@ public class AuthController {
             HttpSession session = request.getSession();
             request.changeSessionId(); // đổi id session sau khi đăng nhập để chống session fixation
             session.setAttribute(SessionUser.KEY, user);
+            if (user.isStaff()) {
+                return "redirect:/librarian/dashboard";
+            }
             return "redirect:/";
         } catch (BusinessException e) {
             model.addAttribute("error", e.getMessage());
