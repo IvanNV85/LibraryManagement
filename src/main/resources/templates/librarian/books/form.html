@@ -79,8 +79,10 @@
                         <!-- Nhà xuất bản -->
                         <div class="col-12 col-md-6">
                             <label class="form-label fw-semibold" for="publisher">Nhà xuất bản</label>
-                            <input type="text" class="form-control" id="publisher" th:field="*{publisher}"
-                                   placeholder="VD: NXB Kim Đồng, NXB Văn học" maxlength="150">
+                            <select class="form-select" id="publisher" th:field="*{publisher}">
+                                <option value="">-- Chọn nhà xuất bản --</option>
+                                <option th:each="pub : ${publishers}" th:value="${pub.name}" th:text="${pub.name}"></option>
+                            </select>
                         </div>
 
                         <!-- Đường dẫn ảnh bìa -->

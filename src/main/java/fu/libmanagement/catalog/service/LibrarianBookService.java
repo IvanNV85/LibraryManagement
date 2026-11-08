@@ -4,9 +4,11 @@ import fu.libmanagement.catalog.dto.BookForm;
 import fu.libmanagement.catalog.entity.Author;
 import fu.libmanagement.catalog.entity.Book;
 import fu.libmanagement.catalog.entity.Category;
+import fu.libmanagement.catalog.entity.Publisher;
 import fu.libmanagement.catalog.repository.AuthorRepository;
 import fu.libmanagement.catalog.repository.BookRepository;
 import fu.libmanagement.catalog.repository.CategoryRepository;
+import fu.libmanagement.catalog.repository.PublisherRepository;
 import fu.libmanagement.common.exception.BusinessException;
 import fu.libmanagement.common.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +37,7 @@ public class LibrarianBookService {
     private final BookRepository bookRepository;
     private final CategoryRepository categoryRepository;
     private final AuthorRepository authorRepository;
+    private final PublisherRepository publisherRepository;
 
     /**
      * Lấy danh sách đầu sách cho thủ thư, có phân trang và tìm kiếm.
@@ -53,6 +56,14 @@ public class LibrarianBookService {
     @Transactional(readOnly = true)
     public List<Category> getAllCategories() {
         return categoryRepository.findAllByOrderByNameAsc();
+    }
+
+    /**
+     * Danh sách tất cả nhà xuất bản để đổ vào form dropdown.
+     */
+    @Transactional(readOnly = true)
+    public List<Publisher> getAllPublishers() {
+        return publisherRepository.findAllByOrderByNameAsc();
     }
 
     /**

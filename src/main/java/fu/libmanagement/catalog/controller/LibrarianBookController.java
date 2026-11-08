@@ -49,6 +49,7 @@ public class LibrarianBookController {
     public String createForm(Model model) {
         model.addAttribute("bookForm", new BookForm());
         model.addAttribute("categories", librarianBookService.getAllCategories());
+        model.addAttribute("publishers", librarianBookService.getAllPublishers());
         model.addAttribute("isEdit", false);
         return "librarian/books/form";
     }
@@ -67,6 +68,7 @@ public class LibrarianBookController {
         } catch (BusinessException e) {
             model.addAttribute("error", e.getMessage());
             model.addAttribute("categories", librarianBookService.getAllCategories());
+            model.addAttribute("publishers", librarianBookService.getAllPublishers());
             model.addAttribute("isEdit", false);
             return "librarian/books/form";
         }
@@ -81,6 +83,7 @@ public class LibrarianBookController {
             BookForm form = librarianBookService.getBookForm(id);
             model.addAttribute("bookForm", form);
             model.addAttribute("categories", librarianBookService.getAllCategories());
+            model.addAttribute("publishers", librarianBookService.getAllPublishers());
             model.addAttribute("isEdit", true);
             return "librarian/books/form";
         } catch (BusinessException e) {
@@ -104,6 +107,7 @@ public class LibrarianBookController {
         } catch (BusinessException e) {
             model.addAttribute("error", e.getMessage());
             model.addAttribute("categories", librarianBookService.getAllCategories());
+            model.addAttribute("publishers", librarianBookService.getAllPublishers());
             model.addAttribute("isEdit", true);
             return "librarian/books/form";
         }

@@ -222,15 +222,6 @@
     <div class="d-flex align-items-center gap-2">
         <h2 class="h5 mb-0 fw-bold text-dark" th:text="${title}">Tiêu đề trang</h2>
     </div>
-    <div class="d-flex align-items-center gap-3">
-        <a class="btn btn-outline-secondary btn-sm" th:href="@{/}" target="_blank">
-            <i class="bi bi-globe me-1"></i> Trang độc giả
-        </a>
-        <div class="d-flex align-items-center gap-2" th:if="${currentUser != null}">
-            <span th:replace="~{fragments/layout :: avatar(${currentUser}, 'avatar-sm')}"></span>
-            <span class="small fw-semibold d-none d-md-inline" th:text="${currentUser.fullName}">Họ tên</span>
-        </div>
-    </div>
 </header>
 
 </body>
