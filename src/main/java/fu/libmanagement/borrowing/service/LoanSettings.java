@@ -35,6 +35,14 @@ public class LoanSettings {
         return getInt("DUE_REMINDER_DAYS", 2);
     }
 
+    public int loanDays() {
+        return getInt("LOAN_DAYS", 14);
+    }
+
+    public int pickupHoldDays() {
+        return getInt("PICKUP_HOLD_DAYS", 3);
+    }
+
     private int getInt(String key, int defaultValue) {
         List<?> rows = em.createNativeQuery("select setting_value from settings where setting_key = :key")
                 .setParameter("key", key)
