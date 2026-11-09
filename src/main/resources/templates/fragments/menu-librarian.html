@@ -23,9 +23,15 @@
     <a class="account-item" th:href="@{/librarian/purchase-orders}">
         <span class="icon-circle"><i class="bi bi-box-seam"></i></span>Phiếu nhập sách
     </a>
-        <a class="account-item" th:href="@{/librarian/fines}">
-            <span class="icon-circle"><i class="bi bi-cash-coin"></i></span> Xử lý phạt
-        </a>
+    <a class="account-item" th:href="@{/librarian/borrow-requests}">
+        <span class="icon-circle"><i class="bi bi-inbox"></i></span> Duyệt mượn online
+    </a>
+    <a class="account-item" th:href="@{/librarian/loans/create}">
+        <span class="icon-circle"><i class="bi bi-file-earmark-plus"></i></span> Lập phiếu tại quầy
+    </a>
+    <a class="account-item" th:href="@{/librarian/fines}">
+        <span class="icon-circle"><i class="bi bi-cash-coin"></i></span> Xử lý phạt
+    </a>
     </th:block>
 </body>
 
