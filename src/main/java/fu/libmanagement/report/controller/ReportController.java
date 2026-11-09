@@ -11,9 +11,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class ReportController {
     private final ReportService reports;
 
-    @GetMapping("/admin/reports")
+    @GetMapping("/admin/dashboard")
     public String dashboard(Model model) {
         model.addAttribute("statistics", reports.statistics());
         return "admin/reports";
+    }
+
+    @GetMapping("/admin/reports")
+    public String legacyReport() {
+        return "redirect:/admin/dashboard";
     }
 }
