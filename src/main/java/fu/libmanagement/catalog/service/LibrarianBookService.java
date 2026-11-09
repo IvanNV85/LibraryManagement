@@ -111,7 +111,7 @@ public class LibrarianBookService {
         // Kiểm tra quy tắc trùng ISBN (UC20)
         if (bookRepository.existsByIsbn(cleanIsbn)) {
             throw new BusinessException("Mã ISBN [" + cleanIsbn + "] đã tồn tại trong hệ thống. "
-                    + "Quy định: Với sách trùng ISBN, vui lòng bổ sung bản sao vật lý (UC21) thay vì tạo đầu sách mới!");
+                    + "Quy định: Với sách trùng ISBN, vui lòng bổ sung bản sao vật lý thay vì tạo đầu sách mới!");
         }
 
         Book book = new Book();
