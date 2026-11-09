@@ -14,7 +14,22 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByEmail(String email);
 
+    Optional<User> findByPhone(String phone);
+
     boolean existsByEmail(String email);
+
+    @Query("""
+        SELECT u FROM User u
+        LEFT JOIN ReaderCard rc ON rc.user = u
+        WHERE u.role = 'READER'
+          AND (
+            LOWER(u.email) = LOWER(:identifier)
+            OR u.phone = :identifier
+            OR rc.cardCode = :identifier
+            OR CAST(u.id AS string) = :identifier
+          )
+        """)
+    java.util.List<User> findReadersByIdentifier(@Param("identifier") String identifier);
 
     @Query("select u from User u where u.role = :role and (lower(u.fullName) like :keyword or lower(u.email) like :keyword) order by u.fullName, u.id")
     Page<User> searchStaff(@Param("role") Role role, @Param("keyword") String keyword, Pageable pageable);

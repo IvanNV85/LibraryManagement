@@ -8,4 +8,6 @@ import java.util.Optional;
 public interface ReaderCardRepository extends JpaRepository<ReaderCard, Long> {
 
     Optional<ReaderCard> findByUserId(Long userId);
+
+    Optional<ReaderCard> findByCardCode(String cardCode);
 }

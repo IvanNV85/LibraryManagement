@@ -17,6 +17,12 @@ public interface BookCopyRepository extends JpaRepository<BookCopy, Long> {
     long countByStatus(CopyStatus status);
 
     @EntityGraph(attributePaths = "book")
+    Optional<BookCopy> findByBarcode(String barcode);
+
+    @EntityGraph(attributePaths = "book")
+    java.util.List<BookCopy> findByBookIdAndStatus(Long bookId, CopyStatus status);
+
+    @EntityGraph(attributePaths = "book")
     @Query("""
         select c from BookCopy c join c.book b
         where (:status is null or c.status = :status)
