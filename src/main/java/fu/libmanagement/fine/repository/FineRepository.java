@@ -1,6 +1,7 @@
 package fu.libmanagement.fine.repository;
 
 import fu.libmanagement.common.enums.FineStatus;
+import fu.libmanagement.common.enums.FineType;
 import fu.libmanagement.fine.entity.Fine;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -9,8 +10,14 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 public interface FineRepository extends JpaRepository<Fine, Long> {
+
+    /**
+     * Tìm khoản phạt theo phiếu mượn và loại phạt (phù hợp với ràng buộc duy nhất uq_fines_loan_type).
+     */
+    Optional<Fine> findByLoanIdAndFineType(Long loanId, FineType fineType);
 
     /**
      * Tìm kiếm và lọc danh sách khoản phạt cho thủ thư.

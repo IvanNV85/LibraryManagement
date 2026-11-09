@@ -3,6 +3,7 @@ package fu.libmanagement.borrowing.repository;
 import fu.libmanagement.borrowing.entity.Loan;
 import fu.libmanagement.common.enums.LoanSource;
 import fu.libmanagement.common.enums.LoanStatus;
+import fu.libmanagement.inventory.entity.BookCopy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -87,6 +88,50 @@ public interface LoanRepository extends JpaRepository<Loan, Long> {
             @Param("keyword") String keyword,
             @Param("source") LoanSource source,
             @Param("status") LoanStatus status,
+            Pageable pageable
+    );
+
+    Optional<Loan> findFirstByCopyIdAndStatusIn(Long copyId, Collection<LoanStatus> statuses);
+
+    /**
+     * Tìm kiếm danh sách các phiếu mượn đang lưu hành cần thu hồi (UC18 - Ghi nhận trả sách).
+     */
+    @EntityGraph(attributePaths = {"book", "reader"})
+    @Query(value = """
+            SELECT l FROM Loan l
+            JOIN l.reader r
+            JOIN l.book b
+            LEFT JOIN BookCopy bc ON bc.id = l.copyId
+            WHERE l.status IN :statuses
+              AND (
+                :keyword = ''
+                OR LOWER(r.fullName) LIKE :keyword
+                OR LOWER(r.email) LIKE :keyword
+                OR LOWER(b.title) LIKE :keyword
+                OR LOWER(b.isbn) LIKE :keyword
+                OR (bc IS NOT NULL AND LOWER(bc.barcode) LIKE :keyword)
+                OR CAST(l.id AS string) LIKE :keyword
+              )
+            """,
+            countQuery = """
+            SELECT COUNT(l) FROM Loan l
+            JOIN l.reader r
+            JOIN l.book b
+            LEFT JOIN BookCopy bc ON bc.id = l.copyId
+            WHERE l.status IN :statuses
+              AND (
+                :keyword = ''
+                OR LOWER(r.fullName) LIKE :keyword
+                OR LOWER(r.email) LIKE :keyword
+                OR LOWER(b.title) LIKE :keyword
+                OR LOWER(b.isbn) LIKE :keyword
+                OR (bc IS NOT NULL AND LOWER(bc.barcode) LIKE :keyword)
+                OR CAST(l.id AS string) LIKE :keyword
+              )
+            """)
+    Page<Loan> searchReturningLoans(
+            @Param("keyword") String keyword,
+            @Param("statuses") Collection<LoanStatus> statuses,
             Pageable pageable
     );
 }
