@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout-librarian :: head(${isEdit} ? 'Chỉnh sửa đầu sách' : 'Thêm đầu sách mới')}"></head>
+<body>
+
+<div class="dashboard-layout">
+    <!-- Sidebar với tab 'books' đang active -->
+    <aside th:replace="~{fragments/layout-librarian :: sidebar('books')}"></aside>
+
+    <!-- Khu vực làm việc chính -->
+    <div class="dashboard-main">
+        <header th:replace="~{fragments/layout-librarian :: topbar(${isEdit} ? 'Chỉnh sửa đầu sách' : 'Thêm đầu sách mới')}"></header>
+
+        <main class="dashboard-content">
+            <div class="panel border-0 shadow-sm p-4 mx-auto" style="max-width: 860px;">
+
+                <div class="d-flex justify-content-between align-items-center pb-3 mb-4 border-bottom">
+                    <div>
+                        <h1 class="h4 mb-1" th:text="${isEdit} ? 'Chỉnh sửa đầu sách' : 'Thêm đầu sách mới'">Thêm đầu sách mới</h1>
+                        <p class="text-muted small mb-0">Điền đầy đủ các thông tin chi tiết của đầu sách dưới đây.</p>
+                    </div>
+                    <a class="btn btn-outline-secondary btn-sm" th:href="@{/librarian/books}">
+                        <i class="bi bi-arrow-left me-1"></i> Quay lại danh sách
+                    </a>
+                </div>
+
+                <!-- Thông báo lỗi nghiệp vụ nếu có -->
+                <div th:replace="~{fragments/layout :: alerts}"></div>
+
+                <form th:action="${isEdit} ? @{/librarian/books/{id}/edit(id=${bookForm.id})} : @{/librarian/books/new}"
+                      th:object="${bookForm}" method="post">
+
+                    <div class="row g-3">
+                        <!-- Mã ISBN -->
+                        <div class="col-12 col-md-6">
+                            <label class="form-label fw-semibold" for="isbn">
+                                Mã ISBN <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" class="form-control" id="isbn" th:field="*{isbn}"
+                                   placeholder="VD: 9786040000016" required maxlength="20">
+                            <div class="form-text">Mã định danh duy nhất (10-20 ký tự). Không được trùng với sách đã có.</div>
+                        </div>
+
+                        <!-- Năm xuất bản -->
+                        <div class="col-12 col-md-6">
+                            <label class="form-label fw-semibold" for="publishYear">Năm xuất bản</label>
+                            <input type="number" class="form-control" id="publishYear" th:field="*{publishYear}"
+                                   placeholder="VD: 2024" min="1000" max="2100">
+                        </div>
+
+                        <!-- Tên sách -->
+                        <div class="col-12">
+                            <label class="form-label fw-semibold" for="title">
+                                Tên đầu sách <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" class="form-control" id="title" th:field="*{title}"
+                                   placeholder="Nhập tên đầu sách..." required maxlength="255">
+                        </div>
+
+                        <!-- Tác giả -->
+                        <div class="col-12 col-md-6">
+                            <label class="form-label fw-semibold" for="authorNames">
+                                Tác giả <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" class="form-control" id="authorNames" th:field="*{authorNames}"
+                                   placeholder="VD: Tô Hoài, Nguyễn Du" required>
+                            <div class="form-text">Nếu có nhiều tác giả, hãy phân cách bằng dấu phẩy (,).</div>
+                        </div>
+
+                        <!-- Thể loại -->
+                        <div class="col-12 col-md-6">
+                            <label class="form-label fw-semibold" for="categoryId">Thể loại</label>
+                            <select class="form-select" id="categoryId" th:field="*{categoryId}">
+                                <option value="">-- Chọn thể loại --</option>
+                                <option th:each="cat : ${categories}" th:value="${cat.id}" th:text="${cat.name}"></option>
+                            </select>
+                        </div>
+
+                        <!-- Nhà xuất bản -->
+                        <div class="col-12 col-md-6">
+                            <label class="form-label fw-semibold" for="publisher">Nhà xuất bản</label>
+                            <select class="form-select" id="publisher" th:field="*{publisher}">
+                                <option value="">-- Chọn nhà xuất bản --</option>
+                                <option th:each="pub : ${publishers}" th:value="${pub.name}" th:text="${pub.name}"></option>
+                            </select>
+                        </div>
+
+                        <!-- Đường dẫn ảnh bìa -->
+                        <div class="col-12 col-md-6">
+                            <label class="form-label fw-semibold" for="coverUrl">Đường dẫn ảnh bìa (Cover URL)</label>
+                            <input type="text" class="form-control" id="coverUrl" th:field="*{coverUrl}"
+                                   placeholder="VD: /images/covers/9786040000016.svg hoặc link ảnh">
+                        </div>
+
+                        <!-- Trạng thái hiển thị -->
+                        <div class="col-12 d-flex align-items-center">
+                            <div class="form-check mt-2">
+                                <input class="form-check-input" type="checkbox" id="visible" th:field="*{visible}">
+                                <label class="form-check-label fw-semibold" for="visible">
+                                    Cho phép hiển thị trong danh mục tìm kiếm của độc giả
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Mô tả chi tiết -->
+                        <div class="col-12">
+                            <label class="form-label fw-semibold" for="description">Tóm tắt nội dung / Mô tả</label>
+                            <textarea class="form-control" id="description" th:field="*{description}" rows="4"
+                                      placeholder="Nhập tóm tắt nội dung cuốn sách..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Nút bấm điều hướng -->
+                    <div class="d-flex justify-content-end gap-2 pt-4 mt-4 border-top">
+                        <a class="btn btn-outline-secondary" th:href="@{/librarian/books}">Hủy bỏ</a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg me-1"></i> <span th:text="${isEdit} ? 'Lưu thay đổi' : 'Tạo đầu sách'">Lưu đầu sách</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+</div>
+
+</body>
+</html>

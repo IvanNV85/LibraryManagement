@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout-librarian :: head('Dashboard quản trị')}"></head>
+<body>
+<div class="dashboard-layout">
+    <aside th:replace="~{fragments/layout-librarian :: sidebar('dashboard')}"></aside>
+    <div class="dashboard-main">
+        <header th:replace="~{fragments/layout-librarian :: topbar('Dashboard quản trị')}"></header>
+        <main class="dashboard-content">
+<div class="w-100">
+    <div class="panel border-0 shadow-sm p-4">
+        <h3>DASHBOARD QUẢN TRỊ</h3>
+        <hr>
+        <div class="row g-3 mt-2">
+            <div class="col-md-4"><div class="card h-100"><div class="card-body">
+                <h5 class="card-title">Đang mượn</h5><p class="fs-2 mb-0" th:text="${statistics.onLoan}">0</p>
+            </div></div></div>
+            <div class="col-md-4"><div class="card h-100"><div class="card-body">
+                <h5 class="card-title">Quá hạn</h5><p class="fs-2 mb-0" th:text="${statistics.overdue}">0</p>
+            </div></div></div>
+            <div class="col-md-4"><div class="card h-100"><div class="card-body">
+                <h5 class="card-title">Sẵn sàng cho mượn</h5><p class="fs-2 mb-0" th:text="${statistics.available}">0</p>
+            </div></div></div>
+        </div>
+    </div>
+</div>
+        </main>
+    </div>
+</div>
+</body>
+</html>

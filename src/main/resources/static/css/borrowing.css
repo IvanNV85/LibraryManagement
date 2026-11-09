@@ -1,0 +1,112 @@
+/*
+ * CSS riêng của UC11-15 (mượn trả, đặt trước, thông báo phía độc giả).
+ * Dùng các biến màu của style.css (--lib-border, --lib-primary, --lib-dark) để khớp giao diện chung.
+ * Mọi class đều có tiền tố loan-, borrow-, notice-, empty- để không đụng CSS của người khác.
+ */
+
+:root {
+    --bw-danger: #b23a48;
+    --bw-success: #2f8f5b;
+    --bw-warning: #c98a12;
+    --bw-muted: #6b6858;
+}
+
+/* ---------- Trạng thái trống ---------- */
+.empty-state { text-align: center; padding: 32px 12px 16px; }
+.empty-state img { max-width: 240px; width: 70%; height: auto; margin-bottom: 12px; }
+.empty-state h2 { font-size: 1.1rem; font-weight: 700; }
+.empty-state p { color: var(--bw-muted); max-width: 420px; margin: 0 auto 16px; }
+
+/* ---------- Tiêu đề trang ---------- */
+.borrow-page-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+.borrow-page-head h1 { margin: 0; }
+.borrow-subnav { display: flex; gap: 6px; flex-wrap: wrap; }
+.borrow-subnav a { padding: 5px 12px; border-radius: 999px; border: 1px solid var(--lib-border); background: #fff; color: var(--lib-dark); text-decoration: none; font-size: 14px; }
+.borrow-subnav a:hover { background: #f7f5ee; }
+.borrow-subnav a.is-active { background: var(--lib-primary); border-color: var(--lib-primary); color: #fff; }
+
+/* ---------- Thẻ phiếu mượn (UC12) ---------- */
+.loan-list { display: flex; flex-direction: column; gap: 14px; }
+.loan-card { display: flex; gap: 16px; padding: 16px; background: #fff; border: 1px solid var(--lib-border); border-left: 4px solid var(--lib-border); border-radius: 12px; }
+.loan-card--pending { border-left-color: var(--bw-warning); }
+.loan-card--approved { border-left-color: #2a8fb0; }
+.loan-card--borrowed { border-left-color: var(--lib-primary); }
+.loan-card--overdue { border-left-color: var(--bw-danger); background: #fdf6f6; }
+.loan-card--returned { border-left-color: var(--bw-success); }
+.loan-card--waiting { border-left-color: var(--bw-warning); }
+.loan-card--ready, .loan-card--fulfilled { border-left-color: var(--bw-success); }
+.loan-card--rejected, .loan-card--cancelled, .loan-card--expired { border-left-color: #a9a590; }
+
+.loan-cover { width: 72px; height: 96px; object-fit: cover; border-radius: 6px; background: #e9ecef; flex-shrink: 0; box-shadow: 0 1px 4px rgba(0, 0, 0, .2); }
+.loan-body { flex: 1 1 auto; min-width: 0; }
+.loan-title { font-weight: 700; color: var(--lib-dark); text-decoration: none; }
+.loan-title:hover { color: var(--lib-primary); text-decoration: underline; }
+.loan-meta { display: flex; flex-wrap: wrap; gap: 4px 18px; margin-top: 6px; font-size: 14px; color: var(--bw-muted); }
+.loan-meta strong { color: var(--lib-dark); font-weight: 600; }
+.loan-note { margin-top: 8px; padding: 6px 10px; border-radius: 8px; background: #f7f5ee; font-size: 14px; }
+.loan-note--danger { background: #fbe9eb; color: #7d2531; }
+.loan-actions { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; flex-shrink: 0; }
+.loan-actions form { margin: 0; }
+
+/* Nhãn đếm ngược hạn trả (borrowing.js điền chữ và đổi màu) */
+.loan-due-chip { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 13px; font-weight: 600; background: #e9eef5; color: #234; }
+.loan-due-chip.is-soon { background: #fdf0d3; color: #7a5200; }
+.loan-due-chip.is-late { background: #fbe9eb; color: #7d2531; }
+
+/* Thanh tiến trình: Gửi yêu cầu -> Được duyệt -> Đang mượn -> Đã trả */
+.loan-steps { display: flex; list-style: none; margin: 12px 0 0; padding: 0; max-width: 520px; }
+.loan-steps li { flex: 1; position: relative; text-align: center; font-size: 12px; color: #8a8775; }
+.loan-steps li::before { content: ""; display: block; width: 14px; height: 14px; margin: 0 auto 4px; border-radius: 50%; background: #fff; border: 2px solid #cfc8b0; position: relative; z-index: 1; }
+.loan-steps li::after { content: ""; position: absolute; top: 6px; left: -50%; width: 100%; height: 2px; background: #cfc8b0; }
+.loan-steps li:first-child::after { display: none; }
+.loan-steps li.is-done { color: var(--lib-dark); }
+.loan-steps li.is-done::before { background: var(--lib-primary); border-color: var(--lib-primary); }
+.loan-steps li.is-done::after { background: var(--lib-primary); }
+.loan-steps li.is-current { font-weight: 700; color: var(--lib-dark); }
+.loan-steps li.is-current::after { background: var(--lib-primary); }
+.loan-steps li.is-danger::after { background: var(--bw-danger); }
+.loan-steps li.is-current::before { box-shadow: 0 0 0 4px rgba(29, 111, 184, .2); }
+.loan-steps li.is-danger::before { background: var(--bw-danger); border-color: var(--bw-danger); box-shadow: 0 0 0 4px rgba(178, 58, 72, .2); }
+.loan-steps li.is-final::before { background: var(--bw-success); border-color: var(--bw-success); }
+
+/* ---------- Trang mượn sách (UC11 / UC13) ---------- */
+.borrow-detail { display: flex; gap: 28px; flex-wrap: wrap; }
+.borrow-detail-cover { width: 220px; max-width: 100%; border-radius: 8px; box-shadow: 0 4px 14px rgba(0, 0, 0, .22); background: #e9ecef; }
+.borrow-detail-info { flex: 1 1 280px; min-width: 0; }
+.borrow-rules { margin: 18px 0 0; padding: 12px 16px; border: 1px dashed var(--lib-border); border-radius: 10px; background: #faf8f1; font-size: 14px; }
+.borrow-rules h2 { font-size: 14px; font-weight: 700; margin: 0 0 6px; }
+.borrow-rules ul { margin: 0; padding-left: 18px; }
+.borrow-avail { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 999px; font-weight: 600; font-size: 14px; }
+.borrow-avail--yes { background: #e2f3ea; color: #1d6b43; }
+.borrow-avail--no { background: #fbe9eb; color: #7d2531; }
+
+/* Nút đang gửi (borrowing.js thêm class này để chống bấm đúp) */
+.is-submitting { pointer-events: none; opacity: .75; }
+
+/* ---------- Thông báo (UC15) ---------- */
+.notice-list { display: flex; flex-direction: column; gap: 10px; }
+.notice-item { display: flex; gap: 14px; padding: 14px 16px; background: #fff; border: 1px solid var(--lib-border); border-radius: 12px; transition: background .2s; }
+.notice-item.is-unread { background: #eef5fc; border-color: #b9d3ec; }
+.notice-icon { width: 40px; height: 40px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 1.15rem; flex-shrink: 0; background: #e4e6eb; color: #3b3a33; }
+.notice--overdue .notice-icon, .notice--loan_rejected .notice-icon, .notice--fine_created .notice-icon { background: #fbe9eb; color: var(--bw-danger); }
+.notice--loan_approved .notice-icon, .notice--reservation_ready .notice-icon { background: #e2f3ea; color: var(--bw-success); }
+.notice--due_soon .notice-icon { background: #fdf0d3; color: var(--bw-warning); }
+.notice--new_book .notice-icon { background: #e4eefa; color: var(--lib-primary); }
+.notice-main { flex: 1 1 auto; min-width: 0; }
+.notice-head { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; }
+.notice-title { font-weight: 600; }
+.notice-item.is-unread .notice-title { font-weight: 700; }
+.notice-item.is-unread .notice-title::before { content: ""; display: inline-block; width: 8px; height: 8px; margin-right: 6px; border-radius: 50%; background: var(--lib-primary); }
+.notice-time { font-size: 13px; color: var(--bw-muted); white-space: nowrap; }
+.notice-actions { display: flex; gap: 8px; margin-top: 8px; }
+.notice-actions form { margin: 0; }
+
+/* ---------- Màn hình nhỏ ---------- */
+@media (max-width: 640px) {
+    .loan-card { flex-wrap: wrap; }
+    .loan-actions { flex-direction: row; align-items: center; width: 100%; justify-content: flex-start; }
+    .loan-cover { width: 60px; height: 80px; }
+    .borrow-detail { gap: 16px; }
+    .borrow-detail-cover { width: 160px; }
+    .notice-head { flex-direction: column; gap: 2px; }
+}

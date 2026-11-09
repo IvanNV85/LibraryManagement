@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout-librarian :: head('Chi tiết bản sao')}"></head>
+<body>
+<div class="dashboard-layout">
+    <aside th:replace="~{fragments/layout-librarian :: sidebar('copies')}"></aside>
+    <div class="dashboard-main">
+        <header th:replace="~{fragments/layout-librarian :: topbar('Chi tiết bản sao')}"></header>
+        <main class="dashboard-content">
+<div class="w-100"><div class="panel border-0 shadow-sm p-4">
+    <h3>CHI TIẾT BẢN SAO</h3><hr>
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+    <dl class="row">
+        <dt class="col-sm-3">Barcode</dt><dd class="col-sm-9" th:text="${copy.barcode}"></dd>
+        <dt class="col-sm-3">Tên sách</dt><dd class="col-sm-9" th:text="${copy.book.title}"></dd>
+        <dt class="col-sm-3">ISBN</dt><dd class="col-sm-9" th:text="${copy.book.isbn}"></dd>
+        <dt class="col-sm-3">Trạng thái</dt>
+        <dd class="col-sm-9">
+            <span th:if="${copy.status.name() == 'AVAILABLE'}" class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1"><i class="bi bi-check-circle me-1"></i>Sẵn sàng</span>
+            <span th:if="${copy.status.name() == 'HELD'}" class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1"><i class="bi bi-bookmark-check me-1"></i>Đang giữ</span>
+            <span th:if="${copy.status.name() == 'BORROWED'}" class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-2 py-1"><i class="bi bi-book-half me-1"></i>Đang mượn</span>
+            <span th:if="${copy.status.name() == 'DAMAGED'}" class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1"><i class="bi bi-exclamation-triangle me-1"></i>Bị hỏng</span>
+            <span th:if="${copy.status.name() == 'LOST'}" class="badge bg-danger text-white px-2 py-1"><i class="bi bi-x-octagon me-1"></i>Mất sách</span>
+            <span th:if="${copy.status.name() == 'DISPOSED'}" class="badge bg-secondary-subtle text-secondary border border-secondary-subtle px-2 py-1"><i class="bi bi-trash me-1"></i>Đã thanh lý</span>
+        </dd>
+        <dt class="col-sm-3">Dòng phiếu nhập</dt><dd class="col-sm-9" th:text="${copy.purchaseOrderItemId != null ? copy.purchaseOrderItemId : '—'}"></dd>
+        <dt class="col-sm-3">Ngày tạo</dt><dd class="col-sm-9" th:text="${copy.createdAt}"></dd>
+    </dl>
+    <h4>Cập nhật thông tin</h4>
+    <form th:action="@{/librarian/copies/{id}(id=${copy.id})}" method="post">
+        <div class="mb-3"><label class="form-label" for="shelfLocation">Vị trí kệ</label><input class="form-control" id="shelfLocation" name="shelfLocation" th:value="${copy.shelfLocation}" maxlength="50"></div>
+        <div class="mb-3"><label class="form-label" for="price">Giá trị</label><input class="form-control" type="number" id="price" name="price" th:value="${copy.price}" min="0" max="9999999999.99" step="0.01"></div>
+        <div class="mb-3"><label class="form-label" for="note">Ghi chú</label><textarea class="form-control" id="note" name="note" maxlength="255" th:text="${copy.note}"></textarea></div>
+        <button class="btn btn-primary">Lưu thông tin</button>
+    </form>
+    <div th:if="${copy.status.name() == 'AVAILABLE' or copy.status.name() == 'DAMAGED' or copy.status.name() == 'LOST'}" class="mt-4">
+        <h4>Ghi nhận tình trạng</h4>
+        <p>Chỉ bản sao không có lượt mượn hoặc đặt trước còn hiệu lực mới được chuyển trạng thái.</p>
+        <form th:action="@{/librarian/copies/{id}/condition(id=${copy.id})}" method="post" class="d-flex gap-2 flex-wrap">
+            <select class="form-select w-auto" name="status" aria-label="Tình trạng mới" required>
+                <option value="DAMAGED" th:if="${copy.status.name() == 'AVAILABLE'}">Hỏng</option>
+                <option value="LOST" th:if="${copy.status.name() == 'AVAILABLE'}">Mất</option>
+                <option value="DISPOSED">Thanh lý</option>
+            </select><button class="btn btn-danger">Ghi nhận</button>
+        </form>
+    </div>
+    <a class="btn btn-secondary mt-4" th:href="@{/librarian/copies}">Quay lại danh sách</a>
+</div></div>
+        </main>
+    </div>
+</div>
+</body></html>

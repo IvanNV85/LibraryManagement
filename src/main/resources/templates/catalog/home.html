@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Trang chủ')}"></head>
+<body>
+<div th:replace="~{fragments/layout :: navbar}"></div>
+
+<div class="container my-4">
+
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+    <!-- Giới thiệu -->
+    <div class="panel mb-4">
+        <h1 class="h3 mb-2">Chào mừng đến Thư viện trực tuyến</h1>
+        <p class="text-muted">Tra cứu sách, mượn trực tuyến, đặt trước và theo dõi lịch sử mượn trả ngay trên web.</p>
+        <a class="btn btn-primary" th:href="@{/books}">Xem danh mục sách</a>
+        <a class="btn btn-outline-primary ms-2" th:if="${currentUser == null}" th:href="@{/register}">Đăng ký tài khoản</a>
+    </div>
+
+    <!-- Sách mới -->
+    <div class="panel page-spacer" th:if="${!newBooks.isEmpty()}">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="h5 mb-0">Sách mới</h2>
+            <a th:href="@{/books}">Xem tất cả</a>
+        </div>
+        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-3">
+            <div class="col" th:each="b : ${newBooks}">
+                <div th:replace="~{catalog/book-card :: card(${b})}"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

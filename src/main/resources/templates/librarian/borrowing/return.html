@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/layout-librarian :: head('Ghi nhận trả sách')}"></head>
+
+<body>
+    <div class="dashboard-layout">
+        <!-- Sidebar điều hướng thủ thư -->
+        <aside th:replace="~{fragments/layout-librarian :: sidebar('returns')}"></aside>
+
+        <!-- Khung làm việc chính -->
+        <div class="dashboard-main">
+            <header th:replace="~{fragments/layout-librarian :: topbar('Ghi nhận trả sách')}"></header>
+
+            <main class="dashboard-content">
+                <div class="w-100">
+                    <!-- Thông báo Flash (Alerts) -->
+                    <div th:replace="~{fragments/layout :: alerts}"></div>
+
+                    <!-- KHU VỰC 1: KHUNG QUÉT MÃ VẠCH / NHẬP MÃ PHIẾU TRẢ NHANH -->
+                    <div class="panel border-0 shadow-sm p-4 mb-4">
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <span class="rounded bg-primary text-white p-2 d-inline-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                                <i class="bi bi-upc-scan"></i>
+                            </span>
+                            <h5 class="fw-bold mb-0">TIẾP NHẬN TRẢ SÁCH TẠI QUẦY</h5>
+                        </div>
+                        <p class="text-muted small mb-3">
+                            Dùng máy quét mã vạch quét mã trên gáy sách (Barcode), hoặc gõ trực tiếp <strong>Mã vạch</strong> (ví dụ: <code>BC00022</code>) hoặc <strong>Mã phiếu mượn</strong> (ví dụ: <code>#2</code>) để kiểm tra.
+                        </p>
+
+                        <!-- Ô nhập tra cứu Barcode / Mã phiếu -->
+                        <div class="row g-2 align-items-center mb-3">
+                            <div class="col-md-8 col-lg-6">
+                                <div class="input-group input-group-lg">
+                                    <span class="input-group-text bg-white"><i class="bi bi-upc-scan text-primary"></i></span>
+                                    <input type="text" id="scanIdentifier" class="form-control" placeholder="Quét Barcode hoặc nhập Mã phiếu mượn (#ID)..." autofocus autocomplete="off">
+                                    <button class="btn btn-outline-secondary" type="button" id="btnClearScan" title="Xóa trắng"><i class="bi bi-x-lg"></i></button>
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <button class="btn btn-primary btn-lg px-4" type="button" id="btnDoLookup">
+                                    <i class="bi bi-search me-1"></i> Tra cứu & Tiếp nhận
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Cảnh báo lỗi tra cứu không tìm thấy -->
+                        <div id="lookupAlertBox" class="alert alert-danger d-none align-items-center gap-2 mb-3" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill fs-5"></i>
+                            <span id="lookupAlertMsg">Không tìm thấy thông tin phiếu mượn tương ứng.</span>
+                        </div>
+
+                        <!-- KHUNG PREVIEW & FORM XÁC NHẬN TRẢ SÁCH (Hiển thị khi tra cứu thành công) -->
+                        <div id="returnPreviewBox" class="border rounded p-4 bg-light d-none mt-3">
+                            <form th:action="@{/librarian/loans/return}" method="post" id="returnSubmitForm">
+                                <input type="hidden" name="loanId" id="fLoanId">
+                                <input type="hidden" name="barcode" id="fBarcode">
+
+                                <div class="row g-4">
+                                    <!-- Cột trái: Thông tin Đầu sách & Độc giả -->
+                                    <div class="col-lg-6 border-end-lg pe-lg-4">
+                                        <div class="d-flex align-items-start gap-3 mb-3">
+                                            <div style="width: 70px; height: 100px; flex-shrink: 0;" class="bg-white rounded border d-flex align-items-center justify-content-center overflow-hidden shadow-sm">
+                                                <img id="pBookCover" src="" alt="Bìa" class="w-100 h-100 object-fit-cover d-none">
+                                                <i id="pBookIcon" class="bi bi-book text-muted fs-1"></i>
+                                            </div>
+                                            <div>
+                                                <span class="badge bg-secondary mb-1">Phiếu mượn: <span id="pLoanBadgeId">#1</span></span>
+                                                <h5 class="fw-bold text-dark mb-1" id="pBookTitle">Tên cuốn sách</h5>
+                                                <div class="small text-muted mb-1">ISBN: <span id="pBookIsbn" class="fw-semibold text-dark">-</span></div>
+                                                <div class="small text-muted">
+                                                    Barcode: <span id="pBookBarcode" class="badge bg-light text-dark border fw-bold">-</span>
+                                                    &nbsp;|&nbsp; Kệ: <span id="pBookShelf" class="fw-semibold text-dark">-</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <hr class="my-3">
+
+                                        <!-- Thông tin độc giả -->
+                                        <h6 class="fw-bold text-secondary mb-2"><i class="bi bi-person-badge me-1"></i> Thông tin Độc giả</h6>
+                                        <div class="bg-white rounded p-3 border">
+                                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                                <span class="text-muted small">Họ và tên:</span>
+                                                <span class="fw-bold text-dark" id="pReaderName">-</span>
+                                            </div>
+                                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                                <span class="text-muted small">Email:</span>
+                                                <span class="text-dark small" id="pReaderEmail">-</span>
+                                            </div>
+                                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                                <span class="text-muted small">Số thẻ thư viện:</span>
+                                                <span class="badge bg-primary-subtle text-primary border" id="pReaderCard">-</span>
+                                            </div>
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <span class="text-muted small">Số điện thoại:</span>
+                                                <span class="text-dark small" id="pReaderPhone">-</span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Cảnh báo hàng chờ đặt trước (nếu có) -->
+                                        <div id="pReservationNotice" class="alert alert-info mt-3 mb-0 d-none py-2 px-3 small">
+                                            <i class="bi bi-bell-fill me-1 text-primary"></i>
+                                            Đầu sách này đang có <strong id="pReservationCount">0</strong> độc giả trong danh sách đặt trước!
+                                        </div>
+                                    </div>
+
+                                    <!-- Cột phải: Thời hạn, Đánh giá tình trạng sách & Xác nhận thu phạt -->
+                                    <div class="col-lg-6 ps-lg-4">
+                                        <h6 class="fw-bold text-secondary mb-2"><i class="bi bi-clock-history me-1"></i> Tình trạng Thời hạn & Phạt trễ</h6>
+                                        
+                                        <!-- Khung tóm tắt hạn trả -->
+                                        <div class="bg-white rounded p-3 border mb-3">
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <span class="text-muted small">Ngày mượn:</span>
+                                                <span class="fw-semibold text-dark small" id="pBorrowedAt">-</span>
+                                            </div>
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <span class="text-muted small">Hạn trả quy định:</span>
+                                                <span class="fw-bold text-dark" id="pDueDate">-</span>
+                                            </div>
+                                            <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                                                <span class="fw-semibold text-muted small">Tình trạng hạn:</span>
+                                                <span id="pOverdueStatusBadge" class="badge bg-success-subtle text-success border px-2 py-1">Đúng hạn</span>
+                                            </div>
+                                            <div id="pOverdueFineRow" class="d-none mt-2 pt-2 border-top text-danger">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <span class="small">Phạt trễ hạn (<span id="pOverdueDaysCalc">0 ngày x 2.000đ</span>):</span>
+                                                    <span class="fw-bold fs-6" id="pOverdueFineAmount">0 đ</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Đánh giá tình trạng vật lý của sách khi trả -->
+                                        <h6 class="fw-bold text-secondary mb-2"><i class="bi bi-check2-square me-1"></i> Đánh giá tình trạng sách</h6>
+                                        <div class="mb-3">
+                                            <div class="form-check mb-2">
+                                                <input class="form-check-input" type="radio" name="condition" id="condNormal" value="NORMAL" checked>
+                                                <label class="form-check-label fw-semibold text-success" for="condNormal">
+                                                    <i class="bi bi-check-circle me-1"></i> 1. Bình thường (Sách nguyên vẹn, sẵn sàng lên kệ)
+                                                </label>
+                                            </div>
+                                            <div class="form-check mb-2">
+                                                <input class="form-check-input" type="radio" name="condition" id="condDamaged" value="DAMAGED">
+                                                <label class="form-check-label fw-semibold text-warning-emphasis" for="condDamaged">
+                                                    <i class="bi bi-exclamation-triangle me-1"></i> 2. Bị hư hỏng (Rách bìa, vẽ bẩn, ướt nước, mất trang)
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="condition" id="condLost" value="LOST">
+                                                <label class="form-check-label fw-semibold text-danger" for="condLost">
+                                                    <i class="bi bi-x-octagon me-1"></i> 3. Báo mất sách (Độc giả làm thất lạc cuốn sách)
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                        <!-- Ô nhập phụ thu bồi thường (chỉ hiện khi chọn Hư hỏng hoặc Báo mất) -->
+                                        <div id="customFineBox" class="mb-3 p-3 bg-warning-subtle rounded border border-warning-subtle d-none">
+                                            <label class="form-label fw-bold text-dark small" for="customFineInput" id="customFineLabel">Tiền phạt hư hỏng / Bồi thường sách (VNĐ):</label>
+                                            <div class="input-group">
+                                                <input type="number" class="form-control" name="customFine" id="customFineInput" min="0" step="1000" placeholder="50000">
+                                                <span class="input-group-text">VNĐ</span>
+                                            </div>
+                                            <div class="form-text small" id="customFineHelp">Mức mặc định: 50.000đ với sách hỏng hoặc giá trị sách nếu làm mất.</div>
+                                        </div>
+
+                                        <!-- Ghi chú trả sách -->
+                                        <div class="mb-3">
+                                            <label class="form-label text-muted small" for="returnNote">Ghi chú khi trả (không bắt buộc):</label>
+                                            <input type="text" class="form-control" name="note" id="returnNote" placeholder="Ví dụ: Độc giả trả đúng hạn, bìa hơi gập nhẹ...">
+                                        </div>
+
+                                        <!-- Tùy chọn thu phạt tại quầy ngay bây giờ -->
+                                        <div id="payFineNowBox" class="form-check p-3 bg-white rounded border mb-3 d-none">
+                                            <input class="form-check-input ms-0 me-2" type="checkbox" name="payFineNow" id="payFineNowCheck" value="true" checked>
+                                            <label class="form-check-label fw-bold text-dark" for="payFineNowCheck">
+                                                <i class="bi bi-cash me-1 text-success"></i> Đã thu tiền phạt tại quầy (Thanh toán tiền mặt ngay)
+                                            </label>
+                                            <div class="text-muted small mt-1 ms-4">
+                                                Nếu bỏ tích, khoản phạt sẽ được ghi nợ trên tài khoản độc giả (độc giả sẽ bị chặn mượn sách tiếp cho đến khi thanh toán).
+                                            </div>
+                                        </div>
+
+                                        <!-- Nút hoàn tất trả sách -->
+                                        <div class="d-grid gap-2">
+                                            <button type="submit" class="btn btn-success btn-lg py-3 fw-bold">
+                                                <i class="bi bi-check2-circle me-1"></i> XÁC NHẬN HOÀN TẤT TRẢ SÁCH
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- KHU VỰC 2: DANH SÁCH SÁCH ĐANG LƯU HÀNH CẦN THU HỒI -->
+                    <div class="panel border-0 shadow-sm p-4">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                            <h5 class="fw-bold mb-0">DANH SÁCH SÁCH ĐANG LƯU HÀNH (<span th:text="${result.totalElements}">0</span>)</h5>
+                        </div>
+
+                        <!-- Bộ lọc tìm kiếm danh sách -->
+                        <form class="row g-3 align-items-center mb-4" method="get" th:action="@{/librarian/loans/return}">
+                            <div class="col-md-6 col-lg-5">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+                                    <input type="text" class="form-control" name="keyword" th:value="${keyword}"
+                                           placeholder="Tìm theo tên độc giả, email, tên sách, ISBN, barcode, mã phiếu...">
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-lg-3">
+                                <select class="form-select" name="status">
+                                    <option value="ALL" th:selected="${status == 'ALL'}">-- Tất cả đang lưu hành --</option>
+                                    <option value="BORROWED" th:selected="${status == 'BORROWED'}">Đang mượn (Trong hạn)</option>
+                                    <option value="OVERDUE" th:selected="${status == 'OVERDUE'}">Quá hạn (Cần thu hồi)</option>
+                                </select>
+                            </div>
+                            <div class="col-auto d-flex gap-2">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-funnel me-1"></i> Lọc
+                                </button>
+                                <a th:href="@{/librarian/loans/return}" class="btn btn-outline-secondary" title="Xóa bộ lọc">
+                                    <i class="bi bi-arrow-counterclockwise"></i>
+                                </a>
+                            </div>
+                        </form>
+
+                        <!-- Bảng dữ liệu phiếu mượn -->
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th style="width: 80px;">Mã phiếu</th>
+                                        <th>Đầu sách & Barcode</th>
+                                        <th>Độc giả</th>
+                                        <th>Ngày mượn</th>
+                                        <th>Hạn trả</th>
+                                        <th>Trạng thái</th>
+                                        <th class="text-end" style="width: 130px;">Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:if="${#lists.isEmpty(loans)}">
+                                        <td colspan="7" class="text-center py-5 text-muted">
+                                            <i class="bi bi-journal-check fs-1 d-block mb-2 text-secondary opacity-50"></i>
+                                            <span>Không có sách nào đang lưu hành phù hợp với điều kiện tìm kiếm.</span>
+                                        </td>
+                                    </tr>
+
+                                    <tr th:each="loan : ${loans}">
+                                        <!-- Cột 1: Mã phiếu -->
+                                        <td>
+                                            <span class="fw-bold text-secondary" th:text="'#' + ${loan.id}">#1</span>
+                                        </td>
+
+                                        <!-- Cột 2: Đầu sách & Barcode -->
+                                        <td>
+                                            <div class="d-flex align-items-center gap-3">
+                                                <div style="width: 40px; height: 56px; flex-shrink: 0;" class="bg-light rounded border d-flex align-items-center justify-content-center overflow-hidden">
+                                                    <img th:if="${loan.book.coverUrl != null}" th:src="@{${loan.book.coverUrl}}" alt="Bìa" class="w-100 h-100 object-fit-cover">
+                                                    <i th:if="${loan.book.coverUrl == null}" class="bi bi-book text-muted fs-4"></i>
+                                                </div>
+                                                <div>
+                                                    <div class="fw-semibold text-dark" th:text="${loan.book.title}">Tên sách</div>
+                                                    <div class="small text-muted">
+                                                        ISBN: <span th:text="${loan.book.isbn}">978...</span>
+                                                    </div>
+                                                    <div th:if="${loan.copyId != null and copyMap[loan.copyId] != null}" class="small text-primary">
+                                                        <i class="bi bi-upc-scan me-1"></i>Barcode: <strong th:text="${copyMap[loan.copyId].barcode}">BC...</strong>
+                                                        <span th:if="${copyMap[loan.copyId].shelfLocation != null and !copyMap[loan.copyId].shelfLocation.isBlank()}"
+                                                              class="text-muted">&nbsp;(Kệ <span th:text="${copyMap[loan.copyId].shelfLocation}"></span>)</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+
+                                        <!-- Cột 3: Độc giả -->
+                                        <td>
+                                            <div class="fw-semibold" th:text="${loan.reader.fullName}">Nguyễn Văn A</div>
+                                            <div class="small text-muted" th:text="${loan.reader.email}">reader@library.local</div>
+                                            <div th:if="${loan.reader.phone != null}" class="small text-muted" th:text="${loan.reader.phone}">090...</div>
+                                        </td>
+
+                                        <!-- Cột 4: Ngày mượn -->
+                                        <td class="text-nowrap small text-muted">
+                                            <span th:if="${loan.borrowedAt != null}" th:text="${#temporals.format(loan.borrowedAt, 'dd/MM/yyyy HH:mm')}">-</span>
+                                            <span th:if="${loan.borrowedAt == null}">-</span>
+                                        </td>
+
+                                        <!-- Cột 5: Hạn trả -->
+                                        <td class="text-nowrap">
+                                            <div th:if="${loan.dueDate != null}">
+                                                <div th:if="${loan.status.name() == 'OVERDUE'}" class="text-danger fw-bold">
+                                                    <i class="bi bi-alarm-fill me-1"></i><span th:text="${#temporals.format(loan.dueDate, 'dd/MM/yyyy')}">-</span>
+                                                </div>
+                                                <div th:unless="${loan.status.name() == 'OVERDUE'}" class="fw-semibold text-dark">
+                                                    <span th:text="${#temporals.format(loan.dueDate, 'dd/MM/yyyy')}">-</span>
+                                                </div>
+                                            </div>
+                                            <span th:if="${loan.dueDate == null}" class="text-muted">-</span>
+                                        </td>
+
+                                        <!-- Cột 6: Trạng thái -->
+                                        <td class="text-nowrap">
+                                            <span th:if="${loan.status.name() == 'BORROWED'}" class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-2 py-1">
+                                                <i class="bi bi-book-half me-1"></i> Đang mượn
+                                            </span>
+                                            <span th:if="${loan.status.name() == 'OVERDUE'}" class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1">
+                                                <i class="bi bi-exclamation-octagon me-1"></i> Quá hạn
+                                            </span>
+                                        </td>
+
+                                        <!-- Cột 7: Thao tác -->
+                                        <td class="text-end">
+                                            <button type="button" class="btn btn-outline-success btn-sm px-3"
+                                                    th:data-loan-id="${loan.id}"
+                                                    th:data-barcode="${loan.copyId != null and copyMap[loan.copyId] != null ? copyMap[loan.copyId].barcode : ''}"
+                                                    onclick="quickFillReturn(this.getAttribute('data-barcode') || this.getAttribute('data-loan-id'))">
+                                                <i class="bi bi-arrow-return-left me-1"></i> Nhận trả
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Phân trang -->
+                        <div class="mt-4" th:if="${result.totalPages > 1}">
+                            <nav th:replace="~{fragments/layout :: pagination(${result}, @{/librarian/loans/return(keyword=${keyword}, status=${status})})}"></nav>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT XỬ LÝ TRA CỨU VÀ TÍNH TOÁN TRẢ SÁCH TẠI QUẦY -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const scanInput = document.getElementById('scanIdentifier');
+            const btnLookup = document.getElementById('btnDoLookup');
+            const btnClear = document.getElementById('btnClearScan');
+            const alertBox = document.getElementById('lookupAlertBox');
+            const alertMsg = document.getElementById('lookupAlertMsg');
+            const previewBox = document.getElementById('returnPreviewBox');
+
+            const fLoanId = document.getElementById('fLoanId');
+            const fBarcode = document.getElementById('fBarcode');
+
+            // Elements hiển thị preview
+            const pLoanBadgeId = document.getElementById('pLoanBadgeId');
+            const pBookCover = document.getElementById('pBookCover');
+            const pBookIcon = document.getElementById('pBookIcon');
+            const pBookTitle = document.getElementById('pBookTitle');
+            const pBookIsbn = document.getElementById('pBookIsbn');
+            const pBookBarcode = document.getElementById('pBookBarcode');
+            const pBookShelf = document.getElementById('pBookShelf');
+
+            const pReaderName = document.getElementById('pReaderName');
+            const pReaderEmail = document.getElementById('pReaderEmail');
+            const pReaderCard = document.getElementById('pReaderCard');
+            const pReaderPhone = document.getElementById('pReaderPhone');
+            const pReservationNotice = document.getElementById('pReservationNotice');
+            const pReservationCount = document.getElementById('pReservationCount');
+
+            const pBorrowedAt = document.getElementById('pBorrowedAt');
+            const pDueDate = document.getElementById('pDueDate');
+            const pOverdueStatusBadge = document.getElementById('pOverdueStatusBadge');
+            const pOverdueFineRow = document.getElementById('pOverdueFineRow');
+            const pOverdueDaysCalc = document.getElementById('pOverdueDaysCalc');
+            const pOverdueFineAmount = document.getElementById('pOverdueFineAmount');
+
+            const condNormal = document.getElementById('condNormal');
+            const condDamaged = document.getElementById('condDamaged');
+            const condLost = document.getElementById('condLost');
+            const customFineBox = document.getElementById('customFineBox');
+            const customFineInput = document.getElementById('customFineInput');
+            const customFineLabel = document.getElementById('customFineLabel');
+            const customFineHelp = document.getElementById('customFineHelp');
+            const payFineNowBox = document.getElementById('payFineNowBox');
+            const payFineNowCheck = document.getElementById('payFineNowCheck');
+
+            let currentPreview = null;
+
+            // Xóa trắng ô nhập
+            btnClear.addEventListener('click', function () {
+                scanInput.value = '';
+                scanInput.focus();
+                alertBox.classList.add('d-none');
+            });
+
+            // Lắng nghe phím Enter trong ô quét
+            scanInput.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    doLookup();
+                }
+            });
+
+            btnLookup.addEventListener('click', doLookup);
+
+            // Hàm tra cứu dữ liệu
+            function doLookup() {
+                const val = scanInput.value.trim();
+                if (!val) {
+                    scanInput.focus();
+                    return;
+                }
+
+                alertBox.classList.add('d-none');
+                btnLookup.disabled = true;
+                btnLookup.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Đang kiểm tra...';
+
+                fetch('/librarian/loans/return/lookup?identifier=' + encodeURIComponent(val))
+                    .then(res => {
+                        if (!res.ok) {
+                            return res.json().then(err => { throw new Error(err.message || 'Không tìm thấy phiếu mượn tương ứng.'); });
+                        }
+                        return res.json();
+                    })
+                    .then(data => {
+                        currentPreview = data;
+                        renderPreview(data);
+                    })
+                    .catch(err => {
+                        currentPreview = null;
+                        previewBox.classList.add('d-none');
+                        alertMsg.textContent = err.message;
+                        alertBox.classList.remove('d-none');
+                        scanInput.select();
+                    })
+                    .finally(() => {
+                        btnLookup.disabled = false;
+                        btnLookup.innerHTML = '<i class="bi bi-search me-1"></i> Tra cứu & Tiếp nhận';
+                    });
+            }
+
+            // Render dữ liệu vào Form Preview
+            function renderPreview(d) {
+                fLoanId.value = d.loanId;
+                fBarcode.value = d.barcode;
+
+                pLoanBadgeId.textContent = '#' + d.loanId;
+                pBookTitle.textContent = d.bookTitle;
+                pBookIsbn.textContent = d.isbn;
+                pBookBarcode.textContent = d.barcode || '—';
+                pBookShelf.textContent = d.shelfLocation || '—';
+
+                if (d.coverUrl) {
+                    pBookCover.src = d.coverUrl;
+                    pBookCover.classList.remove('d-none');
+                    pBookIcon.classList.add('d-none');
+                } else {
+                    pBookCover.classList.add('d-none');
+                    pBookIcon.classList.remove('d-none');
+                }
+
+                pReaderName.textContent = d.readerName;
+                pReaderEmail.textContent = d.readerEmail;
+                pReaderCard.textContent = d.readerCardCode || '—';
+                pReaderPhone.textContent = d.readerPhone || '—';
+
+                if (d.waitingReservations > 0) {
+                    pReservationCount.textContent = d.waitingReservations;
+                    pReservationNotice.classList.remove('d-none');
+                } else {
+                    pReservationNotice.classList.add('d-none');
+                }
+
+                pBorrowedAt.textContent = d.borrowedAt || '—';
+                pDueDate.textContent = d.dueDate || '—';
+
+                // Format tiền tệ
+                const nf = new Intl.NumberFormat('vi-VN');
+
+                if (d.overdue) {
+                    pOverdueStatusBadge.className = 'badge bg-danger text-white px-2 py-1';
+                    pOverdueStatusBadge.innerHTML = '<i class="bi bi-exclamation-octagon me-1"></i> Quá hạn ' + d.overdueDays + ' ngày';
+                    pOverdueFineRow.classList.remove('d-none');
+                    pOverdueDaysCalc.textContent = d.overdueDays + ' ngày x ' + nf.format(d.finePerDay) + 'đ';
+                    pOverdueFineAmount.textContent = nf.format(d.estimatedOverdueFine) + ' đ';
+                } else {
+                    pOverdueStatusBadge.className = 'badge bg-success-subtle text-success border px-2 py-1';
+                    pOverdueStatusBadge.innerHTML = '<i class="bi bi-check-circle me-1"></i> Đúng hạn';
+                    pOverdueFineRow.classList.add('d-none');
+                }
+
+                // Reset tình trạng về Normal
+                condNormal.checked = true;
+                updateConditionState();
+
+                // Hiển thị khung Preview và cuộn tới
+                previewBox.classList.remove('d-none');
+                previewBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+
+            // Xử lý thay đổi tình trạng sách (Normal / Damaged / Lost)
+            function updateConditionState() {
+                const isNormal = condNormal.checked;
+                const isDamaged = condDamaged.checked;
+                const isLost = condLost.checked;
+
+                const nf = new Intl.NumberFormat('vi-VN');
+                let hasFine = false;
+
+                if (currentPreview && currentPreview.overdue) {
+                    hasFine = true;
+                }
+
+                if (isNormal) {
+                    customFineBox.classList.add('d-none');
+                    customFineInput.value = '';
+                } else if (isDamaged) {
+                    customFineBox.classList.remove('d-none');
+                    customFineLabel.textContent = 'Tiền phạt bồi thường sách hư hỏng (VNĐ):';
+                    customFineHelp.textContent = 'Mức phạt bồi thường khuyến nghị: 50.000 đ (bạn có thể thay đổi số tiền này).';
+                    customFineInput.value = '50000';
+                    hasFine = true;
+                } else if (isLost) {
+                    customFineBox.classList.remove('d-none');
+                    customFineLabel.textContent = 'Tiền đền bù mất sách (VNĐ):';
+                    const defaultLost = (currentPreview && currentPreview.bookPrice > 0) ? currentPreview.bookPrice : 100000;
+                    customFineHelp.textContent = 'Đền bù theo giá bìa bản sao: ' + nf.format(defaultLost) + ' đ.';
+                    customFineInput.value = defaultLost;
+                    hasFine = true;
+                }
+
+                if (hasFine) {
+                    payFineNowBox.classList.remove('d-none');
+                    payFineNowCheck.checked = true;
+                } else {
+                    payFineNowBox.classList.add('d-none');
+                    payFineNowCheck.checked = false;
+                }
+            }
+
+            condNormal.addEventListener('change', updateConditionState);
+            condDamaged.addEventListener('change', updateConditionState);
+            condLost.addEventListener('change', updateConditionState);
+
+            // Hàm toàn cục cho nút "Nhận trả" ở từng dòng trong bảng
+            window.quickFillReturn = function (code) {
+                if (!code) return;
+                scanInput.value = code;
+                doLookup();
+            };
+        });
+    </script>
+</body>
+
+</html>
+

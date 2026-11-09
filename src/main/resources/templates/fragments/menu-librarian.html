@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<body>
+    <!--
+  MENU CỦA THỦ THƯ (chỉ hiển thị với LIBRARIAN).
+  Thêm chức năng mới: copy một thẻ <a class="account-item"> bên dưới, đổi đường dẫn, tên và icon.
+  Đường dẫn bắt đầu bằng /librarian/.
+-->
+<th:block th:fragment="items">
+    <a class="account-item" th:href="@{/librarian/dashboard}">
+        <span class="icon-circle"><i class="bi bi-speedometer2"></i></span> Trang quản trị (Dashboard)
+    </a>
+    <a class="account-item" th:href="@{/librarian/books}">
+        <span class="icon-circle"><i class="bi bi-journal-bookmark"></i></span> Quản lý đầu sách
+    </a>
+    <a class="account-item" th:href="@{/librarian/readers}">
+        <span class="icon-circle"><i class="bi bi-people"></i></span>Quản lý độc giả
+    </a>
+    <a class="account-item" th:href="@{/librarian/copies}">
+        <span class="icon-circle"><i class="bi bi-bookshelf"></i></span>Quản lý bản sao
+    </a>
+    <a class="account-item" th:href="@{/librarian/purchase-orders}">
+        <span class="icon-circle"><i class="bi bi-box-seam"></i></span>Phiếu nhập sách
+    </a>
+    <a class="account-item" th:href="@{/librarian/borrow-requests}">
+        <span class="icon-circle"><i class="bi bi-inbox"></i></span> Duyệt mượn online
+    </a>
+    <a class="account-item" th:href="@{/librarian/loans/create}">
+        <span class="icon-circle"><i class="bi bi-file-earmark-plus"></i></span> Lập phiếu tại quầy
+    </a>
+    <a class="account-item" th:href="@{/librarian/loans/return}">
+        <span class="icon-circle"><i class="bi bi-arrow-return-left"></i></span> Ghi nhận trả sách
+    </a>
+    <a class="account-item" th:href="@{/librarian/fines}">
+        <span class="icon-circle"><i class="bi bi-cash-coin"></i></span> Xử lý phạt
+    </a>
+    </th:block>
+</body>
+
+</html>

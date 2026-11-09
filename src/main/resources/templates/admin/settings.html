@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout-librarian :: head('Cấu hình quy định')}"></head>
+<body>
+<div class="dashboard-layout">
+    <aside th:replace="~{fragments/layout-librarian :: sidebar('admin-settings')}"></aside>
+    <div class="dashboard-main">
+        <header th:replace="~{fragments/layout-librarian :: topbar('Cấu hình quy định')}"></header>
+        <main class="dashboard-content">
+<div class="w-100" style="max-width: 720px"><div class="panel border-0 shadow-sm p-4">
+    <h3>Cấu hình quy định</h3><hr>
+    <div th:replace="~{fragments/layout :: alerts}"></div>
+    <form th:action="@{/admin/settings}" method="post">
+        <div class="mb-3"><label class="form-label" for="maxBooks">Số sách tối đa mỗi độc giả</label>
+            <input id="maxBooks" name="maxBooks" class="form-control" type="number" min="1" step="1" required th:value="${rules['MAX_BOOKS_PER_READER']}"></div>
+        <div class="mb-3"><label class="form-label" for="loanDays">Số ngày mượn</label>
+            <input id="loanDays" name="loanDays" class="form-control" type="number" min="1" step="1" required th:value="${rules['LOAN_DAYS']}"></div>
+        <div class="mb-3"><label class="form-label" for="finePerDay">Phạt mỗi ngày (VND)</label>
+            <input id="finePerDay" name="finePerDay" class="form-control" type="number" min="0" step="0.01" required th:value="${rules['FINE_PER_DAY']}"></div>
+        <button class="btn btn-primary" type="submit">Lưu quy định</button>
+    </form>
+</div></div>
+        </main>
+    </div>
+</div>
+</body></html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout-librarian :: head('Quản lý độc giả')}"></head>
+<body>
+<div class="dashboard-layout">
+    <aside th:replace="~{fragments/layout-librarian :: sidebar('readers')}"></aside>
+    <div class="dashboard-main">
+        <header th:replace="~{fragments/layout-librarian :: topbar('Quản lý độc giả')}"></header>
+        <main class="dashboard-content">
+
+<div class="w-100">
+    <div class="panel border-0 shadow-sm p-4">
+        <h3>QUẢN LÝ ĐỘC GIẢ</h3>
+        <hr>
+
+        <!-- Thông báo thành công / lỗi -->
+        <div th:replace="~{fragments/layout :: alerts}"></div>
+
+        <!-- Tìm kiếm và lọc -->
+        <form class="row g-3 align-items-center mt-2" th:action="${currentUser.admin} ? @{/admin/readers} : @{/librarian/readers}" method="get">
+            <div class="col-md-6">
+                <input type="text" class="form-control" name="keyword" th:value="${keyword}"
+                       placeholder="Nhập họ tên, email hoặc mã thẻ...">
+            </div>
+            <div class="col-md-3">
+                <select class="form-select" name="status">
+                    <option value="ALL">Tất cả trạng thái</option>
+                    <option value="PENDING" th:selected="${status == 'PENDING'}">Chờ duyệt</option>
+                    <option value="ACTIVE" th:selected="${status == 'ACTIVE'}">Đang hoạt động</option>
+                    <option value="LOCKED" th:selected="${status == 'LOCKED'}">Bị khóa</option>
+                </select>
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+            </div>
+        </form>
+
+        <h4 class="mt-4">Danh sách độc giả (<span th:text="${result.totalElements}">0</span>)</h4>
+
+        <div class="table-responsive"><table class="table table-hover align-middle">
+            <thead class="table-light">
+            <tr>
+                <th>Họ tên</th>
+                <th>Email</th>
+                <th>Mã thẻ</th>
+                <th>Trạng thái thẻ</th>
+                <th>Ngày cấp</th>
+                <th>Hết hạn</th>
+                <th>Thao tác</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="r : ${readers}">
+                <td th:text="${r.fullName}">Nguyễn Văn A</td>
+                <td th:text="${r.email}">a@gmail.com</td>
+                <td th:text="${r.cardCode}">LIB000001</td>
+                <td th:text="${r.status.label}">Đang hoạt động</td>
+                <td th:text="${r.issuedDate}">2026-01-01</td>
+                <td>
+                    <span th:text="${r.expiryDate}">2027-01-01</span>
+                    <span class="text-danger" th:if="${r.expired}">(đã hết hạn)</span>
+                </td>
+                <td>
+                    <!-- Thẻ chờ duyệt: hiện nút Duyệt -->
+                    <form th:if="${r.status.name() == 'PENDING'}" class="d-inline"
+                          th:action="${currentUser.admin} ? @{/admin/readers/{id}/approve(id=${r.cardId})} : @{/librarian/readers/{id}/approve(id=${r.cardId})}" method="post">
+                        <button type="submit" class="btn btn-success btn-sm">Duyệt thẻ</button>
+                    </form>
+
+                    <!-- Thẻ đang hoạt động: hiện nút Gia hạn và Khóa -->
+                    <form th:if="${r.status.name() == 'ACTIVE'}" class="d-inline"
+                          th:action="${currentUser.admin} ? @{/admin/readers/{id}/extend(id=${r.cardId})} : @{/librarian/readers/{id}/extend(id=${r.cardId})}" method="post">
+                        <button type="submit" class="btn btn-primary btn-sm">Gia hạn</button>
+                    </form>
+                    <form th:if="${r.status.name() == 'ACTIVE'}" class="d-inline"
+                          th:action="${currentUser.admin} ? @{/admin/readers/{id}/lock(id=${r.cardId})} : @{/librarian/readers/{id}/lock(id=${r.cardId})}" method="post">
+                        <button type="submit" class="btn btn-danger btn-sm">Khóa</button>
+                    </form>
+
+                    <!-- Thẻ bị khóa: hiện nút Mở khóa -->
+                    <form th:if="${r.status.name() == 'LOCKED'}" class="d-inline"
+                          th:action="${currentUser.admin} ? @{/admin/readers/{id}/unlock(id=${r.cardId})} : @{/librarian/readers/{id}/unlock(id=${r.cardId})}" method="post">
+                        <button type="submit" class="btn btn-secondary btn-sm">Mở khóa</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table></div>
+
+        <!-- Phân trang -->
+        <th:block th:with="readerListUrl=${currentUser.admin} ? @{/admin/readers(keyword=${keyword}, status=${status})} : @{/librarian/readers(keyword=${keyword}, status=${status})}">
+            <nav th:replace="~{fragments/layout :: pagination(${result}, ${readerListUrl})}"></nav>
+        </th:block>
+    </div>
+</div>
+
+        </main>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Hồ sơ cá nhân')}"></head>
+<body>
+<div th:replace="~{fragments/layout :: navbar}"></div>
+
+<div class="container my-4" style="max-width: 720px;">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="mb-3">Hồ sơ cá nhân</h4>
+
+            <div th:replace="~{fragments/layout :: alerts}"></div>
+
+            <!-- Email và thông tin thẻ: chỉ xem, không sửa được -->
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input class="form-control" type="text" th:value="${user.email}" disabled>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label class="form-label">Mã thẻ</label>
+                    <input class="form-control" type="text" th:value="${card != null and card.cardCode != null} ? ${card.cardCode} : 'Chưa có'" disabled>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Trạng thái thẻ</label>
+                    <input class="form-control" type="text" th:value="${card != null} ? ${card.status.label} : '-'" disabled>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Hạn thẻ</label>
+                    <input class="form-control" type="text"
+                           th:value="${card != null and card.expiryDate != null} ? ${card.expiryDate} : '-'" disabled>
+                </div>
+            </div>
+
+            <form th:action="@{/reader/profile}" th:object="${form}" method="post">
+                <div class="mb-3">
+                    <label class="form-label" for="fullName">Họ tên</label>
+                    <input class="form-control" type="text" id="fullName" th:field="*{fullName}" maxlength="100" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="phone">Số điện thoại</label>
+                    <input class="form-control" type="tel" id="phone" th:field="*{phone}" maxlength="10"
+                           pattern="0[0-9]{9}" title="10 chữ số, bắt đầu bằng 0">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="address">Địa chỉ</label>
+                    <input class="form-control" type="text" id="address" th:field="*{address}" maxlength="255">
+                </div>
+                <button class="btn btn-primary" type="submit">Lưu thay đổi</button>
+            </form>
+        </div>
+    </div>
+</div>
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>
