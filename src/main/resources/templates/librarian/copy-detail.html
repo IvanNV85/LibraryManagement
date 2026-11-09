@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/layout-librarian :: head('Chi tiết bản sao')}"></head>
 <body>
@@ -14,7 +14,15 @@
         <dt class="col-sm-3">Barcode</dt><dd class="col-sm-9" th:text="${copy.barcode}"></dd>
         <dt class="col-sm-3">Tên sách</dt><dd class="col-sm-9" th:text="${copy.book.title}"></dd>
         <dt class="col-sm-3">ISBN</dt><dd class="col-sm-9" th:text="${copy.book.isbn}"></dd>
-        <dt class="col-sm-3">Trạng thái</dt><dd class="col-sm-9" th:text="${copy.status}"></dd>
+        <dt class="col-sm-3">Trạng thái</dt>
+        <dd class="col-sm-9">
+            <span th:if="${copy.status.name() == 'AVAILABLE'}" class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1"><i class="bi bi-check-circle me-1"></i>Sẵn sàng</span>
+            <span th:if="${copy.status.name() == 'HELD'}" class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1"><i class="bi bi-bookmark-check me-1"></i>Đang giữ</span>
+            <span th:if="${copy.status.name() == 'BORROWED'}" class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-2 py-1"><i class="bi bi-book-half me-1"></i>Đang mượn</span>
+            <span th:if="${copy.status.name() == 'DAMAGED'}" class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1"><i class="bi bi-exclamation-triangle me-1"></i>Bị hỏng</span>
+            <span th:if="${copy.status.name() == 'LOST'}" class="badge bg-danger text-white px-2 py-1"><i class="bi bi-x-octagon me-1"></i>Mất sách</span>
+            <span th:if="${copy.status.name() == 'DISPOSED'}" class="badge bg-secondary-subtle text-secondary border border-secondary-subtle px-2 py-1"><i class="bi bi-trash me-1"></i>Đã thanh lý</span>
+        </dd>
         <dt class="col-sm-3">Dòng phiếu nhập</dt><dd class="col-sm-9" th:text="${copy.purchaseOrderItemId != null ? copy.purchaseOrderItemId : '—'}"></dd>
         <dt class="col-sm-3">Ngày tạo</dt><dd class="col-sm-9" th:text="${copy.createdAt}"></dd>
     </dl>
