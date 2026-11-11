@@ -12,6 +12,7 @@ import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 
+    /** Tra cứu email trên mọi vai trò, được dùng để kiểm tra trùng email khi thêm/sửa nhân viên. */
     Optional<User> findByEmail(String email);
 
     Optional<User> findByPhone(String phone);
@@ -31,6 +32,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
         """)
     java.util.List<User> findReadersByIdentifier(@Param("identifier") String identifier);
 
+    /**
+     * Tìm tài khoản theo vai trò và họ tên/email, sắp xếp theo họ tên rồi ID, có phân trang.
+     * StaffService truyền vai trò LIBRARIAN và từ khóa chữ thường dạng %từ khóa%.
+     */
     @Query("select u from User u where u.role = :role and (lower(u.fullName) like :keyword or lower(u.email) like :keyword) order by u.fullName, u.id")
     Page<User> searchStaff(@Param("role") Role role, @Param("keyword") String keyword, Pageable pageable);
 }

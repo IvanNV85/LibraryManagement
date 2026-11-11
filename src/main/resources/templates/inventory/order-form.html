@@ -30,11 +30,13 @@
 </div>
 <script>
 const lines = document.getElementById('order-lines');
+// Thêm dòng sách bằng cách sao chép dòng đầu và xóa các giá trị nhập, giữ nguyên tên input để gửi theo nhóm.
 document.getElementById('add-line').addEventListener('click', () => {
     const row = lines.rows[0].cloneNode(true);
     row.querySelectorAll('input').forEach(input => input.value = '');
     lines.appendChild(row);
 });
+// Bắt sự kiện xóa cho cả dòng thêm mới; luôn giữ ít nhất một dòng sách trên form.
 lines.addEventListener('click', event => {
     if (event.target.classList.contains('remove-line') && lines.rows.length > 1) event.target.closest('tr').remove();
 });
